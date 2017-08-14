@@ -28,6 +28,8 @@ void MainGame::run()
 	CreateCaller();
 	gameLoop();
 
+	SDL_DestroyTexture(Texture1);
+	SDL_DestroyTexture(Texture2);
 	SDL_DestroyWindow(_window);
 	delete Mouse;
 	
@@ -69,33 +71,41 @@ void MainGame::processInput()
 				break;
 
 			case SDL_KEYDOWN:
-				CoutCorrectKey(SDL_GetScancodeName(evnt.key.keysym.scancode), columns, rows);
+				CoutCorrectKey(SDL_GetScancodeName(evnt.key.keysym.scancode));
+				
+				const char *Line = Key.c_str();
+				Surface = TTF_RenderText_Solid(Font, Line, TextColor);
+				Texture1 = SDL_CreateTextureFromSurface(_renderer, Surface);
+				rect1.x = 0;
+				rect1.y = 0;
+				rect1.w = 20 * Key.size();
+				rect1.h = 20;
+
+				SDL_QueryTexture(Texture1, NULL, NULL, 0, 0);
+				SDL_FreeSurface(Surface);
+				SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
+				SDL_RenderCopy(_renderer, Texture1, NULL, &rect1);
+
 				break;
 
 		}
+
 	}
 }
 
-std::string MainGame::CoutCorrectKey(std::string t,short x, short y)
+void MainGame::CoutCorrectKey(std::string t)
 {
-	if (t == "Space") { std::cout << " "; return " "; }
-	if (t == "Backspace") { Backspace(); return " "; }
-	if (t == "Return"){std::cout << "\n"; return "\n";}
-	if (t == "Left Shift") { return ""; }
-	if (t == "Tab") { return ""; }
-	if (t == "Escape") { _gameState = GameState::EXIT; std::cout << "\nProgram Ended\n"; return "Exiting"; }
-	else { std::cout << t; return t; }
+	if (t == "Space") { Key.append(" "); }
+	else if (t == "Backspace") { Key = Key.substr(0, Key.size() - 1); }
+	else if (t == "Return"){}
+	else if (t == "Left Shift") {}
+	else if (t == "Tab") {}
+	else if (t == "Escape") { _gameState = GameState::EXIT; std::cout << "\nProgram Ended\n";}
+	else { Key.append(t);}
 }
 void MainGame::Backspace()
 {
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &screeninfo);
-	columns = screeninfo.dwCursorPosition.X;
-	rows = screeninfo.dwCursorPosition.Y;
 
-	columns -= 1;
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { columns, rows });
-	std::cout << " ";
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { columns, rows });
 }
 
 void MainGame::gameLoop()
@@ -105,14 +115,24 @@ void MainGame::gameLoop()
 		processInput();
 		//if (FocusState == false) { HotkeyHandler(_window); }
 		HotkeyHandler(_window);
+		MainRenderer();
 	}
 }
 
+void MainGame::MainRenderer()
+{
+	SDL_RenderClear(_renderer);
+	SDL_RenderCopy(_renderer, Texture1, 0, &rect1);
+	SDL_RenderPresent(_renderer);
+}
 
 void MainGame::initSystems()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
-	_window = SDL_CreateWindow("Beli", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _screenWidth, _screenHeight, SDL_WINDOW_OPENGL);
+	SDL_CreateWindowAndRenderer(_screenWidth, _screenHeight, 0, &_window, &_renderer);
+	TTF_Init();
+	Font = TTF_OpenFont("arial.ttf", 256);
+
 }
 void CreateCaller()
 {
