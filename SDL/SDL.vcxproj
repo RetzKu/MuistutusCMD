@@ -127,16 +127,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="get_Text.cpp" />
-    <ClCompile Include="KeyLogger.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Input_Manager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
-    <ClInclude Include="get_Text.h" />
     <ClInclude Include="Input_Manager.h" />
-    <ClInclude Include="KeyLogger.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
