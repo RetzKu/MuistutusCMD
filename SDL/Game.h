@@ -4,6 +4,10 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <sstream>
+#include <ctime>
+#include <chrono>
+#include <thread>
 #include <memory>
 #include "Input_Manager.h"
 #include "KeyLogger.h"
@@ -24,13 +28,14 @@ public:
 	KeyLogger Keys;
 
 	void run();
+	void MakeTimer(std::string);
+	void CheckIfCompleted(std::string);
+
 	std::string Key;
 	const Uint8 *KeyState;
 	HANDLE output_handle;
 	CONSOLE_SCREEN_BUFFER_INFO screeninfo = {};
 	std::vector<std::string> ActiveKeys = std::vector<std::string>(10);
-
-	char *fontpath = "E:\Codes\arial.ttf";
 
 	SDL_Color TextColor = {255,255,255, 255};
 	TTF_Font *Font;
@@ -43,12 +48,14 @@ public:
 	void Backspace();
 
 	void MainRenderer();
-
-
-
+	
+	struct tm tmTime;
+	struct tm EndLine;
+	int diffseconds;
 	bool FocusState;
 	short columns;
 	short rows;
+	bool TimeCreated = false;
 	
 private:
 	void processInput();
@@ -57,6 +64,9 @@ private:
 
 	SDL_Window* _window;
 	SDL_Renderer* _renderer;
+
+	int TextureWidth;
+	int TextureHeight;
 
 	int _screenWidth = 480;
 	int _screenHeight = 360;
