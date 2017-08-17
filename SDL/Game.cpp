@@ -3,12 +3,14 @@
 
 
 
+
+
 mouse_Pos* Mouse = new mouse_Pos(0,0);
+
 MSG msg = { 0 };
 
 void CreateCaller();
 void HotkeyHandler(SDL_Window *_window);
-int timeasync(int diff);
 
 
 
@@ -147,9 +149,13 @@ void MainGame::MakeTimer(std::string Time)
 
 		time_t tendline = mktime(&EndLine);
 
-		timeasync(difftime(now, tendline));
+		TaskHandler.CreateTask("Taski:" + Time, 12);
+		
+		//TaskList::Task* a = &TaskHandler.Tasks[0]; tuntematon koko
 
 
+		
+		
 		
 
 	}
@@ -180,17 +186,6 @@ void MainGame::gameLoop()
 		MainRenderer();
 
 		
-	}
-}
-
-int timeasync(int diff)
-{
-	while (true)
-	{
-		std::thread printLater{[diff] {
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-			std::cout << diff;
-		}};
 	}
 }
 

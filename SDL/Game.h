@@ -10,7 +10,8 @@
 #include <thread>
 #include <memory>
 #include "Input_Manager.h"
-#include "KeyLogger.h"
+#include <Windows.h>
+#include "TaskList.h"
 #include <algorithm>
 #include <vector>
 #include <SDL\SDL_ttf.h>
@@ -25,7 +26,7 @@ public:
 	MainGame();
 	~MainGame();
 
-	KeyLogger Keys;
+	TaskList TaskHandler;
 
 	void run();
 	void MakeTimer(std::string);
@@ -35,7 +36,6 @@ public:
 	const Uint8 *KeyState;
 	HANDLE output_handle;
 	CONSOLE_SCREEN_BUFFER_INFO screeninfo = {};
-	std::vector<std::string> ActiveKeys = std::vector<std::string>(10);
 
 	SDL_Color TextColor = {255,255,255, 255};
 	TTF_Font *Font;
