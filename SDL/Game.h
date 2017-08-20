@@ -1,5 +1,4 @@
 #pragma once
-#include <GL\glew.h>
 #include <SDL\SDL.h>
 #include <iostream>
 #include <vector>
@@ -11,13 +10,12 @@
 #include <memory>
 #include "Input_Manager.h"
 #include <Windows.h>
-#include "TaskList.h"
 #include <algorithm>
 #include <vector>
 #include <SDL\SDL_ttf.h>
+#include <functional>
 
 enum class GameState{PLAY, EXIT};
-
 
 class MainGame
 {
@@ -26,13 +24,14 @@ public:
 	MainGame();
 	~MainGame();
 
-	TaskList TaskHandler;
-
 	void run();
-	void MakeTimer(std::string);
-	void CheckIfCompleted(std::string);
+	//void MakeTimer(std::string);
+	//void CheckIfCompleted(std::string);
+	void CreateTask(std::string);
 
 	std::string Key;
+	std::vector<std::string> KeyList;
+
 	const Uint8 *KeyState;
 	HANDLE output_handle;
 	CONSOLE_SCREEN_BUFFER_INFO screeninfo = {};
@@ -45,7 +44,6 @@ public:
 	SDL_Surface *Surface;
 
 	void CoutCorrectKey(std::string);
-	void Backspace();
 
 	void MainRenderer();
 	
@@ -68,8 +66,8 @@ private:
 	int TextureWidth;
 	int TextureHeight;
 
-	int _screenWidth = 480;
-	int _screenHeight = 360;
+	int _screenWidth = 240;
+	int _screenHeight = 160;
 	GameState _gameState;
 
 	char c;

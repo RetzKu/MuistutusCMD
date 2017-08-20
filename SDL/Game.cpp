@@ -4,13 +4,58 @@
 
 
 
-
 mouse_Pos* Mouse = new mouse_Pos(0,0);
-
 MSG msg = { 0 };
 
 void CreateCaller();
 void HotkeyHandler(SDL_Window *_window);
+void CheckTasks(SDL_Window* _window, std::string* Key);
+void RemoveCorrectKey(std::string* Key);
+std::string KeypadTranslate(std::string key);
+
+
+struct TriggerTimer
+{
+public:
+	TriggerTimer() {}
+	TriggerTimer(std::string Name, int _RecallInterval) { TaskName = Name; TimeNow = std::chrono::system_clock::now(); RecallInterval = _RecallInterval; TimeToTrigger = false; }
+	std::string TaskName;
+	int RecallInterval;
+	std::chrono::system_clock::time_point TimeNow;
+	bool TimeToTrigger;
+
+}TriggerTime;
+
+
+class Task
+{
+public:
+	Task(struct TriggerTimer a) { _TaskData = a; };
+
+	std::string printname() { std::cout << _TaskData.TaskName; return _TaskData.TaskName; }
+	void SetToNormal()
+	{
+		_TaskData.TimeNow = std::chrono::system_clock::now();
+		_TaskData.TimeToTrigger = false;
+	}
+	bool GetTimeDifference()
+	{
+		std::chrono::duration<double> Seconds = std::chrono::system_clock::now() - _TaskData.TimeNow;
+		auto i = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - _TaskData.TimeNow);
+		int c = (int)Seconds.count();
+		if (c > _TaskData.RecallInterval)
+		{
+			_TaskData.TimeToTrigger = true;
+			//run main task
+		}
+		return _TaskData.TimeToTrigger;
+	}
+
+private:
+	TriggerTimer _TaskData;
+};
+
+std::vector<Task> Tasks;
 
 
 
@@ -75,7 +120,7 @@ void MainGame::processInput()
 
 			case SDL_KEYDOWN:
 				CoutCorrectKey(SDL_GetScancodeName(evnt.key.keysym.scancode));
-				CheckIfCompleted(Key);
+				//CheckIfCompleted(Key);
 				const char *Line = Key.c_str();
 				Surface = TTF_RenderText_Solid(Font, Line, TextColor);
 				Texture1 = SDL_CreateTextureFromSurface(_renderer, Surface);
@@ -95,85 +140,41 @@ void MainGame::processInput()
 
 	}
 }
-void MainGame::CheckIfCompleted(std::string Key)
+
+void MainGame::CreateTask(std::string TaskName)
 {
-	std::string Time;
-	if (Key.back() == '\n')
-	{
-		Key = Key = Key.substr(0, Key.size() - 1);
-		for (int i = Key.length()-4; i < Key.length(); i++)
-		{
-			if (isdigit(Key[i]))
-			{
-				Time.push_back(Key[i]);
-			}
-			else { std::cout << "date incorrect"; break; }
-		}
-		if (Time.length() == 4)
-		{
-			std::cout << Time;
-			MakeTimer(Time);
-			
-		}
-	}
-}
-void MainGame::MakeTimer(std::string Time)
-{
-	int DateTime = std::stoi(Time);
-
-	std::string Hours;
-	std::string Minutes;
-	Hours.push_back(Time[0]);
-	Hours.push_back(Time[1]);
-	Minutes.push_back(Time[2]);
-	Minutes.push_back(Time[3]);
-
-	if (DateTime > 2359)
-	{
-		std::cout << "Meni yli saatana";
-	}
-	else
-	{
-		time_t now = time(0);
-
-		
-
-		localtime_s(&EndLine, &now);
-
-		EndLine.tm_hour = std::stoi(Hours);
-		EndLine.tm_min = std::stoi(Minutes) + 10;
-		TimeCreated = true;
-
-		time(&now);
-
-
-		time_t tendline = mktime(&EndLine);
-
-		TaskHandler.CreateTask("Taski:" + Time, 12);
-		
-		//TaskList::Task* a = &TaskHandler.Tasks[0]; tuntematon koko
-
-
-		
-		
-		
-
-	}
+	TriggerTimer tmpa = TriggerTimer(TaskName, 660);
+	Key.clear();
+	Task b(tmpa);
+	Tasks.push_back(b);
 }
 
 void MainGame::CoutCorrectKey(std::string t)
 {
+	t = KeypadTranslate(t);
 	if (t == "Space") { Key.append(" "); }
 	else if (t == "Backspace") { Key = Key.substr(0, Key.size() - 1); }
-	else if (t == "Return") { Key.append("\n"); }
+	else if (t == "Return") { CreateTask(Key); }
 	else if (t == "Left Shift") {}
 	else if (t == "Tab") {}
-	else if (t == "Escape") { _gameState = GameState::EXIT; std::cout << "\nProgram Ended\n";}
+	else if (t == "Escape") { _gameState = GameState::EXIT; std::cout << "\nProgram Ended\n"; }
 	else { Key.append(t);}
 }
-void MainGame::Backspace()
+std::string KeypadTranslate(std::string key)
 {
-
+	if (key == "Keypad 1") {key = "1";}
+	else if(key == "Keypad 2") {key = "2";}
+	else if(key == "Keypad 3") {key = "3";}
+	else if(key == "Keypad 4") {key = "4";}
+	else if(key == "Keypad 5") {key = "5";}
+	else if(key == "Keypad 6") {key = "6";}
+	else if(key == "Keypad 7") {key = "7";}
+	else if(key == "Keypad 8") {key = "8";}
+	else if(key == "Keypad 9") {key = "9";}
+	else if(key == "Keypad 0") {key = "0";}
+	else if(key == "Keypad +") {key = "+";}
+	else if (key == "Keypad Enter") { key = "Return"; }
+	return key;
 }
 
 void MainGame::gameLoop()
@@ -181,12 +182,38 @@ void MainGame::gameLoop()
 	while (_gameState != GameState::EXIT)
 	{
 		processInput();
-		//if (FocusState == false) { HotkeyHandler(_window); }
 		HotkeyHandler(_window);
 		MainRenderer();
+		CheckTasks(_window,&Key);
 
 		
 	}
+}
+
+void CheckTasks(SDL_Window* _window, std::string* Key)
+{
+	if (sizeof(Tasks) != 0)
+	{
+		
+		for (int i = 0; i < Tasks.size(); i++)
+		{
+			if (Tasks[i].GetTimeDifference() == true)
+			{
+				std::string o = Tasks[i].printname();
+				const char *Taskname = o.c_str();
+				Tasks[i].printname();
+				std::cout << "\n";
+				MessageBox(NULL, Taskname, "Bid ilmoitus",MB_OK|MB_ICONQUESTION|MB_SYSTEMMODAL|MB_SERVICE_NOTIFICATION);
+				Tasks[i].SetToNormal();
+				Tasks.erase(Tasks.begin() + i);
+				RemoveCorrectKey(Key);
+			}
+		}
+	}
+}
+void RemoveCorrectKey(std::string* Key)
+{
+
 }
 
 void MainGame::MainRenderer()
@@ -213,14 +240,17 @@ void CreateCaller()
 }
 void HotkeyHandler(SDL_Window *_window)
 {
-	if (PeekMessage(&msg, NULL, 0, 0,NULL) != 0)
+	if (WaitMessage())
 	{
-		if (msg.message == WM_HOTKEY)
+		if (PeekMessage(&msg, NULL, 0, 0, NULL) != 0)
 		{
-			//std::cout << "Hotkey pressed";
-			SDL_RaiseWindow(_window);
-			SDL_RestoreWindow(_window);
-			SDL_SetWindowInputFocus(_window);
+			if (msg.message == WM_HOTKEY)
+			{
+				std::cout << "Hotkey pressed";
+				SDL_RaiseWindow(_window);
+				SDL_RestoreWindow(_window);
+				SDL_SetWindowInputFocus(_window);
+			}
 		}
 	}
 }
