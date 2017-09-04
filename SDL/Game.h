@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL\SDL.h>
+#include "Renderer.h"
 #include <tchar.h>
 #include <iostream>
 #include <vector>
@@ -46,8 +47,11 @@ public:
 
 	void CoutCorrectKey(std::string);
 
-	void MainRenderer();
 	
+	/* New Experimental renderer class*/
+	Renderer RendererClass;
+
+
 	struct tm tmTime;
 	struct tm EndLine;
 	int diffseconds;
@@ -59,7 +63,6 @@ public:
 private:
 	void processInput();
 	void gameLoop();
-	void initSystems();
 
 	HWND hApp;
 	SDL_Window* _window;

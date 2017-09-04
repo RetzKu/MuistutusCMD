@@ -7,11 +7,7 @@
 mouse_Pos* Mouse = new mouse_Pos(0,0);
 MSG msg = { 0 };
 
-
-void CreateCaller();
-void HotkeyHandler(SDL_Window *_window);
 void CheckTasks(SDL_Window* _window, std::string* Key);
-void RemoveCorrectKey(std::string* Key);
 std::string KeypadTranslate(std::string key);
 
 struct TriggerTimer
@@ -26,6 +22,7 @@ public:
 	bool TimeToTrigger;
 
 }TriggerTime;
+
 
 
 class Task
@@ -77,14 +74,22 @@ MainGame::~MainGame()
 
 void MainGame::run()
 {
-	initSystems();
-	CreateCaller();
+	//Renderer::Texture* NewTexture = RendererClass.NewTexture(TextureType::Text, "Text");
+	RendererClass.NewTexture(TextureType::Text, "Text");
+	SDL_Rect Rect;
+	Rect.x = 10;
+	Rect.y = 10;
+	RendererClass.SetRectangle(0, Rect);
+	//Textures.push_back(NewTexture);
 	gameLoop();
+	
 
 	SDL_DestroyTexture(Texture1);
 	SDL_DestroyTexture(Texture2);
 	SDL_DestroyWindow(_window);
 	delete Mouse;
+
+	
 	
 }
 
@@ -125,20 +130,17 @@ void MainGame::processInput()
 
 			case SDL_KEYDOWN:
 				CoutCorrectKey(SDL_GetScancodeName(evnt.key.keysym.scancode));
-				//CheckIfCompleted(Key);
 				const char *Line = Key.c_str();
 				
-				Surface = TTF_RenderText_Solid(Font, Line, TextColor);
-				Texture1 = SDL_CreateTextureFromSurface(_renderer, Surface);
-				SDL_QueryTexture(Texture1, NULL, NULL, &TextureWidth, &TextureHeight);
-				rect1.x = 0;
-				rect1.y = 0;
-				rect1.w = TextureWidth;
-				rect1.h = TextureHeight;
+				//Surface = TTF_RenderText_Solid(Font, Line, TextColor);
+				//Texture1 = SDL_CreateTextureFromSurface(_renderer, Surface);
+				//SDL_QueryTexture(Texture1, NULL, NULL, &TextureWidth, &TextureHeight);
+				//rect1.x = 0;
+				//rect1.y = 0;
+				//rect1.w = TextureWidth;
+				//rect1.h = TextureHeight;
 
-				SDL_FreeSurface(Surface);
-				SDL_SetRenderDrawColor(_renderer, 255,255,255, 0xFF);
-				SDL_RenderCopy(_renderer, Texture1, NULL, &rect1);
+				//SDL_FreeSurface(Surface);
 
 				break;
 
@@ -179,7 +181,7 @@ void MainGame::CoutCorrectKey(std::string t)
 	else if (t == "Left Shift") {}
 	else if (t == "Tab") {}
 	else if (t == "Escape") { _gameState = GameState::EXIT; std::cout << "\nProgram Ended\n"; }
-	else { Key.append(t);}
+	else { /*insert key*/ RendererClass.ChangeLine(0, t[0]);}
 }
 std::string KeypadTranslate(std::string key)
 {
@@ -203,11 +205,9 @@ void MainGame::gameLoop()
 	while (_gameState != GameState::EXIT)
 	{
 		processInput();
-		HotkeyHandler(_window);
-		MainRenderer();
+		RendererClass.Render();
+		//MainRenderer();
 		CheckTasks(_window,&Key);
-
-		
 	}
 }
 
@@ -230,51 +230,7 @@ void CheckTasks(SDL_Window* _window, std::string* Key)
 				{
 					Tasks.erase(Tasks.begin() + i);
 				}
-				RemoveCorrectKey(Key);
 			}
 		}
 	}
-}
-void RemoveCorrectKey(std::string* Key)
-{
-
-}
-
-void MainGame::MainRenderer()
-{
-	SDL_RenderClear(_renderer);
-	SDL_RenderCopy(_renderer, Texture1, 0, &rect1);
-	SDL_RenderPresent(_renderer);
-}
-
-void MainGame::initSystems()
-{
-	SDL_Init(SDL_INIT_EVERYTHING);
-	SDL_CreateWindowAndRenderer(_screenWidth, _screenHeight, 0, &_window, &_renderer);
-	SetTaskName("Timer");
-	TTF_Init();
-	Font = TTF_OpenFont("arial.ttf", 12);
-
-}
-
-void CreateCaller()
-{
-	if (RegisterHotKey(NULL,1,MOD_CONTROL,0x42))  //0x42 is 'b'
-	{
-		std::cout << "Hotkey Created\n";
-	}
-}
-void HotkeyHandler(SDL_Window *_window)
-{
-	msg = { 0 };
-	PeekMessage(&msg, NULL, 0,0,PM_REMOVE);
-	if (msg.message == WM_HOTKEY)
-	{
-		std::cout << "Hotkey pressed";
-		SDL_RaiseWindow(_window);
-		SDL_RestoreWindow(_window);
-		SDL_SetWindowInputFocus(_window);
-	}
-	TranslateMessage(&msg);
-	DispatchMessage(&msg);
 }
