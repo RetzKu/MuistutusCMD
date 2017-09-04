@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL\SDL.h>
+#include <tchar.h>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -28,7 +29,7 @@ public:
 	//void MakeTimer(std::string);
 	//void CheckIfCompleted(std::string);
 	void CreateTask(std::string);
-
+	void SetTaskName(std::string name) { SDL_SetWindowTitle(_window, name.c_str()); }
 	std::string Key;
 	std::vector<std::string> KeyList;
 
@@ -36,7 +37,7 @@ public:
 	HANDLE output_handle;
 	CONSOLE_SCREEN_BUFFER_INFO screeninfo = {};
 
-	SDL_Color TextColor = {255,255,255, 255};
+	SDL_Color TextColor = {0,0,0, 255};
 	TTF_Font *Font;
 
 	SDL_Rect rect1, rect2;
@@ -60,6 +61,7 @@ private:
 	void gameLoop();
 	void initSystems();
 
+	HWND hApp;
 	SDL_Window* _window;
 	SDL_Renderer* _renderer;
 

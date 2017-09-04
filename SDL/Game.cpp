@@ -7,19 +7,20 @@
 mouse_Pos* Mouse = new mouse_Pos(0,0);
 MSG msg = { 0 };
 
+
 void CreateCaller();
 void HotkeyHandler(SDL_Window *_window);
 void CheckTasks(SDL_Window* _window, std::string* Key);
 void RemoveCorrectKey(std::string* Key);
 std::string KeypadTranslate(std::string key);
 
-
 struct TriggerTimer
 {
 public:
 	TriggerTimer() {}
-	TriggerTimer(std::string Name, int _RecallInterval) { TaskName = Name; TimeNow = std::chrono::system_clock::now(); RecallInterval = _RecallInterval; TimeToTrigger = false; }
+	TriggerTimer(std::string Name, bool Singleuse, int _RecallInterval) { TaskName = Name; _Singleuse = Singleuse; TimeNow = std::chrono::system_clock::now(); RecallInterval = _RecallInterval; TimeToTrigger = false; }
 	std::string TaskName;
+	bool _Singleuse;
 	int RecallInterval;
 	std::chrono::system_clock::time_point TimeNow;
 	bool TimeToTrigger;
@@ -50,7 +51,11 @@ public:
 		}
 		return _TaskData.TimeToTrigger;
 	}
-
+	bool Single()
+	{
+		return _TaskData._Singleuse;
+	}
+	
 private:
 	TriggerTimer _TaskData;
 };
@@ -122,6 +127,7 @@ void MainGame::processInput()
 				CoutCorrectKey(SDL_GetScancodeName(evnt.key.keysym.scancode));
 				//CheckIfCompleted(Key);
 				const char *Line = Key.c_str();
+				
 				Surface = TTF_RenderText_Solid(Font, Line, TextColor);
 				Texture1 = SDL_CreateTextureFromSurface(_renderer, Surface);
 				SDL_QueryTexture(Texture1, NULL, NULL, &TextureWidth, &TextureHeight);
@@ -131,7 +137,7 @@ void MainGame::processInput()
 				rect1.h = TextureHeight;
 
 				SDL_FreeSurface(Surface);
-				SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
+				SDL_SetRenderDrawColor(_renderer, 255,255,255, 0xFF);
 				SDL_RenderCopy(_renderer, Texture1, NULL, &rect1);
 
 				break;
@@ -143,7 +149,22 @@ void MainGame::processInput()
 
 void MainGame::CreateTask(std::string TaskName)
 {
-	TriggerTimer tmpa = TriggerTimer(TaskName, 660);
+	std::string o;
+	bool Singleuse = false;
+	if (Key.back() == 'S')
+	{
+		Key = Key.substr(0, Key.size() - 1);
+		Singleuse = true;
+	}
+	for (int i = Key.length()-3; i < Key.length(); i++)
+	{
+		
+		if (isdigit(Key[i]));
+		{
+			o.push_back(Key[i]);
+		}
+	}
+	TriggerTimer tmpa = TriggerTimer(TaskName,Singleuse, std::stoi(o));
 	Key.clear();
 	Task b(tmpa);
 	Tasks.push_back(b);
@@ -194,18 +215,21 @@ void CheckTasks(SDL_Window* _window, std::string* Key)
 {
 	if (sizeof(Tasks) != 0)
 	{
-		
 		for (int i = 0; i < Tasks.size(); i++)
 		{
+			std::cout << "juoksee taustalla";
 			if (Tasks[i].GetTimeDifference() == true)
 			{
 				std::string o = Tasks[i].printname();
 				const char *Taskname = o.c_str();
 				Tasks[i].printname();
 				std::cout << "\n";
-				MessageBox(NULL, Taskname, "Bid ilmoitus",MB_OK|MB_ICONQUESTION|MB_SYSTEMMODAL|MB_SERVICE_NOTIFICATION);
+				MessageBox(NULL, Taskname, "elixiirit kehiin",MB_OK|MB_ICONQUESTION|MB_SYSTEMMODAL|MB_SERVICE_NOTIFICATION);
 				Tasks[i].SetToNormal();
-				Tasks.erase(Tasks.begin() + i);
+				if (Tasks[i].Single() == true)
+				{
+					Tasks.erase(Tasks.begin() + i);
+				}
 				RemoveCorrectKey(Key);
 			}
 		}
@@ -227,10 +251,12 @@ void MainGame::initSystems()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_CreateWindowAndRenderer(_screenWidth, _screenHeight, 0, &_window, &_renderer);
+	SetTaskName("Timer");
 	TTF_Init();
 	Font = TTF_OpenFont("arial.ttf", 12);
 
 }
+
 void CreateCaller()
 {
 	if (RegisterHotKey(NULL,1,MOD_CONTROL,0x42))  //0x42 is 'b'
@@ -240,17 +266,15 @@ void CreateCaller()
 }
 void HotkeyHandler(SDL_Window *_window)
 {
-	if (WaitMessage())
+	msg = { 0 };
+	PeekMessage(&msg, NULL, 0,0,PM_REMOVE);
+	if (msg.message == WM_HOTKEY)
 	{
-		if (PeekMessage(&msg, NULL, 0, 0, NULL) != 0)
-		{
-			if (msg.message == WM_HOTKEY)
-			{
-				std::cout << "Hotkey pressed";
-				SDL_RaiseWindow(_window);
-				SDL_RestoreWindow(_window);
-				SDL_SetWindowInputFocus(_window);
-			}
-		}
+		std::cout << "Hotkey pressed";
+		SDL_RaiseWindow(_window);
+		SDL_RestoreWindow(_window);
+		SDL_SetWindowInputFocus(_window);
 	}
+	TranslateMessage(&msg);
+	DispatchMessage(&msg);
 }
