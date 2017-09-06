@@ -10,6 +10,7 @@
 #include <memory>
 #include "Input_Manager.h"
 #include <Windows.h>
+#include <SDL\SDL_syswm.h>
 #include <algorithm>
 #include <vector>
 #include <SDL\SDL_ttf.h>
@@ -54,6 +55,8 @@ public:
 	short columns;
 	short rows;
 	bool TimeCreated = false;
+
+	void SetHandle(HWND Handle) { WindowsHandle = Handle; }
 	
 private:
 	void processInput();
@@ -62,6 +65,8 @@ private:
 
 	SDL_Window* _window;
 	SDL_Renderer* _renderer;
+
+	HWND WindowsHandle;
 
 	int TextureWidth;
 	int TextureHeight;

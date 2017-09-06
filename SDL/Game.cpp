@@ -6,13 +6,13 @@
 
 mouse_Pos* Mouse = new mouse_Pos(0,0);
 MSG msg = { 0 };
+bool hotkeypressed = false;
 
-void CreateCaller();
-void HotkeyHandler(SDL_Window *_window);
+void HotkeyHandler(SDL_Window *_window, HWND WindowsHandle);
 void CheckTasks(SDL_Window* _window, std::string* Key);
 void RemoveCorrectKey(std::string* Key);
 std::string KeypadTranslate(std::string key);
-
+void HotkeyThread();
 
 struct TriggerTimer
 {
@@ -73,7 +73,7 @@ MainGame::~MainGame()
 void MainGame::run()
 {
 	initSystems();
-	CreateCaller();
+	std::thread(HotkeyThread).detach();
 	gameLoop();
 
 	SDL_DestroyTexture(Texture1);
@@ -98,24 +98,6 @@ void MainGame::processInput()
 			case SDL_MOUSEMOTION:
 				Mouse->Get_M_Location(evnt.motion.x, evnt.motion.y);
 				Mouse->Box(250, 270, 100, 100);
-				break;
-
-			case SDL_WINDOWEVENT:
-				switch (evnt.window.event)
-				{
-				case SDL_WINDOWEVENT_FOCUS_GAINED:
-				{
-					FocusState = true;
-					//std::cout << "focus gained ";
-					break;
-				}
-				case SDL_WINDOWEVENT_FOCUS_LOST:
-				{
-					FocusState = false;
-					//std::cout << "focus lost ";
-					break;
-				}
-				}
 				break;
 
 			case SDL_KEYDOWN:
@@ -182,7 +164,7 @@ void MainGame::gameLoop()
 	while (_gameState != GameState::EXIT)
 	{
 		processInput();
-		HotkeyHandler(_window);
+		HotkeyHandler(_window,WindowsHandle);
 		MainRenderer();
 		CheckTasks(_window,&Key);
 
@@ -210,6 +192,7 @@ void CheckTasks(SDL_Window* _window, std::string* Key)
 			}
 		}
 	}
+	//std::cout << "checking tasks";
 }
 void RemoveCorrectKey(std::string* Key)
 {
@@ -230,26 +213,52 @@ void MainGame::initSystems()
 	TTF_Init();
 	Font = TTF_OpenFont("arial.ttf", 12);
 
+	SDL_SysWMinfo SystemInfo;
+	SDL_VERSION(&SystemInfo.version);
+	SDL_GetWindowWMInfo(_window, &SystemInfo);
+
+	SetHandle(SystemInfo.info.win.window);
+
+	
+	
 }
-void CreateCaller()
+
+void HotkeyHandler(SDL_Window *_window, HWND WindowsHandle)
 {
-	if (RegisterHotKey(NULL,1,MOD_CONTROL,0x42))  //0x42 is 'b'
+	if (hotkeypressed == true)
+	{
+		std::cout << "Hotkey pressed";
+		SDL_RaiseWindow(_window);
+		SDL_RestoreWindow(_window);
+		SDL_SetWindowInputFocus(_window);
+		hotkeypressed = false;
+
+		std::thread(HotkeyThread).detach();
+	}
+}
+
+void HotkeyThread()
+{
+	if (RegisterHotKey(NULL, 1, MOD_CONTROL, 0x42))  //0x42 is 'b'
 	{
 		std::cout << "Hotkey Created\n";
 	}
-}
-void HotkeyHandler(SDL_Window *_window)
-{
-	if (WaitMessage())
+
+	while (hotkeypressed == false)
 	{
-		if (PeekMessage(&msg, NULL, 0, 0, NULL) != 0)
+		while (GetMessage(&msg, NULL, 0, 0) != 0)
 		{
-			if (msg.message == WM_HOTKEY)
+			std::cout << "message";
+
+			switch (msg.message)
 			{
-				std::cout << "Hotkey pressed";
-				SDL_RaiseWindow(_window);
-				SDL_RestoreWindow(_window);
-				SDL_SetWindowInputFocus(_window);
+			case WM_HOTKEY:
+				hotkeypressed = true;
+				std::cout << "hotkey pressed";
+				UnregisterHotKey(0, 1);
+				break;
+			default:
+				break;
 			}
 		}
 	}
