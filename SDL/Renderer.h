@@ -14,6 +14,7 @@ enum TextureType
 {
 	Text,
 	Solid,
+	Box,
 
 };
 
@@ -33,8 +34,10 @@ public:
 	void SetRectangle(int index, SDL_Rect Rectangle);
 	void ChangeLine(int index, char Key);
 	void BackspaceLine(int index);
-	void NewTexture(TextureType Type, string Name);
+	void NewTexture(TextureType Type, string Name, SDL_Rect Rect);
+	void NewTexture(TextureType Type, string Name, int x, int y, int h, int w);
 	void AddToRenderer(Texture NewTexture);
 	void Render();
+	void DestroyTextures();
 };
 

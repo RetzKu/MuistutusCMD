@@ -1,0 +1,11 @@
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (SDL.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Renderer.cpp
+  Game.cpp
+c:\users\mikakau\documents\muistutuscmd-masterieitoimi\sdl\game.cpp(160): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\mikakau\documents\muistutuscmd-masterieitoimi\sdl\game.cpp(163): warning C4390: ';': empty controlled statement found; is this the intent?
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  Main.cpp
+  Input_Manager.cpp
+  SDL.vcxproj -> C:\Users\MikaKau\Documents\MuistutusCMD-masterieitoimi\x64\Debug\Muistio.exe
+  SDL.vcxproj -> C:\Users\MikaKau\Documents\MuistutusCMD-masterieitoimi\x64\Debug\Muistio.pdb (Partial PDB)

@@ -7,7 +7,7 @@
 mouse_Pos* Mouse = new mouse_Pos(0,0);
 MSG msg = { 0 };
 
-void CheckTasks(SDL_Window* _window, std::string* Key);
+void CheckTasks(SDL_Window* WindowObject, std::string* Key);
 std::string KeypadTranslate(std::string key);
 
 struct TriggerTimer
@@ -63,34 +63,33 @@ std::vector<Task> Tasks;
 
 MainGame::MainGame()
 {
-	_window = nullptr;
 	_gameState = GameState::PLAY;
 }
 
 
 MainGame::~MainGame()
 {
+
 }
 
 void MainGame::run()
 {
 	//Renderer::Texture* NewTexture = RendererClass.NewTexture(TextureType::Text, "Text");
-	RendererClass.NewTexture(TextureType::Text, "Text");
-	SDL_Rect Rect;
-	Rect.x = 10;
-	Rect.y = 10;
-	RendererClass.SetRectangle(0, Rect);
 	//Textures.push_back(NewTexture);
+	SDL_Rect NewRect;
+	NewRect.x = 10;
+	NewRect.y = 10;
+	RendererClass.NewTexture(TextureType::Text, "Text", NewRect);
+
+	NewRect.x = 10;
+	NewRect.y = 120;
+	NewRect.w = 200;
+	NewRect.h = 20;
+	RendererClass.NewTexture(TextureType::Box, "Insert Box", 10, 120, 20, 200);
+
 	gameLoop();
-	
-
-	SDL_DestroyTexture(Texture1);
-	SDL_DestroyTexture(Texture2);
-	SDL_DestroyWindow(_window);
+	RendererClass.DestroyTextures();
 	delete Mouse;
-
-	
-	
 }
 
 void MainGame::processInput()
@@ -172,15 +171,16 @@ void MainGame::CreateTask(std::string TaskName)
 	Tasks.push_back(b);
 }
 
-void MainGame::CoutCorrectKey(std::string t)
+void MainGame::CoutCorrectKey(std::string t) //koska käytettään SDL_event systeemiä näppäinten painamisessa tarvitaan myös funktio joka muuttaa oikeat event.scancoded kirjaimiksi/numeroiksi
 {
 	t = KeypadTranslate(t);
-	if (t == "Space") { Key.append(" "); }
-	else if (t == "Backspace") { Key = Key.substr(0, Key.size() - 1); }
+	if (t == "Space") { RendererClass.ChangeLine(0,' '); }
+	else if (t == "Backspace") { RendererClass.BackspaceLine(0); }
 	else if (t == "Return") { CreateTask(Key); }
 	else if (t == "Left Shift") {}
 	else if (t == "Tab") {}
 	else if (t == "Escape") { _gameState = GameState::EXIT; std::cout << "\nProgram Ended\n"; }
+	else if (t.size() > 1) { t = ""; }
 	else { /*insert key*/ RendererClass.ChangeLine(0, t[0]);}
 }
 std::string KeypadTranslate(std::string key)
@@ -207,11 +207,11 @@ void MainGame::gameLoop()
 		processInput();
 		RendererClass.Render();
 		//MainRenderer();
-		CheckTasks(_window,&Key);
+		CheckTasks(RendererClass.WindowObject ,&Key);
 	}
 }
 
-void CheckTasks(SDL_Window* _window, std::string* Key)
+void CheckTasks(SDL_Window* WindowObject, std::string* Key)
 {
 	if (sizeof(Tasks) != 0)
 	{

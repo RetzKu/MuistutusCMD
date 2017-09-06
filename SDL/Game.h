@@ -30,20 +30,12 @@ public:
 	//void MakeTimer(std::string);
 	//void CheckIfCompleted(std::string);
 	void CreateTask(std::string);
-	void SetTaskName(std::string name) { SDL_SetWindowTitle(_window, name.c_str()); }
 	std::string Key;
 	std::vector<std::string> KeyList;
 
 	const Uint8 *KeyState;
 	HANDLE output_handle;
 	CONSOLE_SCREEN_BUFFER_INFO screeninfo = {};
-
-	SDL_Color TextColor = {0,0,0, 255};
-	TTF_Font *Font;
-
-	SDL_Rect rect1, rect2;
-	SDL_Texture *Texture1, *Texture2;
-	SDL_Surface *Surface;
 
 	void CoutCorrectKey(std::string);
 
@@ -65,14 +57,7 @@ private:
 	void gameLoop();
 
 	HWND hApp;
-	SDL_Window* _window;
-	SDL_Renderer* _renderer;
 
-	int TextureWidth;
-	int TextureHeight;
-
-	int _screenWidth = 240;
-	int _screenHeight = 160;
 	GameState _gameState;
 
 	char c;
