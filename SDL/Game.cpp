@@ -8,10 +8,11 @@ mouse_Pos* Mouse = new mouse_Pos(0,0);
 MSG msg = { 0 };
 bool hotkeypressed = false;
 
-void HotkeyHandler(SDL_Window *_window, HWND WindowsHandle);
-void CheckTasks(SDL_Window* _window, std::string* Key);
+void CheckTasks();
 std::string KeypadTranslate(std::string key);
 void HotkeyThread();
+void HotkeyHandler(SDL_Window* _window, HWND WindowsHandle);
+
 struct TriggerTimer
 {
 public:
@@ -76,23 +77,11 @@ MainGame::~MainGame()
 
 void MainGame::run()
 {
-	//Renderer::Texture* NewTexture = RendererClass.NewTexture(TextureType::Text, "Text");
 	std::thread(HotkeyThread).detach();
-	SDL_Rect Rect;
-	Rect.x = 10;
-	Rect.y = 10;
-	RendererClass.SetRectangle(0, Rect);
-	//Textures.push_back(NewTexture);
+	RendererClass.NewTexture(TextureType::Text, "Insert");
 	gameLoop();
-	
 
-	SDL_DestroyTexture(Texture1);
-	SDL_DestroyTexture(Texture2);
-	SDL_DestroyWindow(_window);
 	delete Mouse;
-
-	
-	
 }
 
 void MainGame::processInput()
@@ -114,18 +103,6 @@ void MainGame::processInput()
 
 			case SDL_KEYDOWN:
 				CoutCorrectKey(SDL_GetScancodeName(evnt.key.keysym.scancode));
-				const char *Line = Key.c_str();
-				
-				//Surface = TTF_RenderText_Solid(Font, Line, TextColor);
-				//Texture1 = SDL_CreateTextureFromSurface(_renderer, Surface);
-				//SDL_QueryTexture(Texture1, NULL, NULL, &TextureWidth, &TextureHeight);
-				//rect1.x = 0;
-				//rect1.y = 0;
-				//rect1.w = TextureWidth;
-				//rect1.h = TextureHeight;
-
-				//SDL_FreeSurface(Surface);
-
 				break;
 
 		}
@@ -136,6 +113,7 @@ void MainGame::processInput()
 void MainGame::CreateTask(std::string TaskName)
 {
 	std::string o;
+	Key = RendererClass.GetLine(0);
 	bool Singleuse = false;
 	if (Key.back() == 'S')
 	{
@@ -148,9 +126,10 @@ void MainGame::CreateTask(std::string TaskName)
 		if (isdigit(Key[i]));
 		{
 			o.push_back(Key[i]);
+			Key[i] = ' ';
 		}
 	}
-	TriggerTimer tmpa = TriggerTimer(TaskName,Singleuse, std::stoi(o));
+	TriggerTimer tmpa = TriggerTimer(Key,Singleuse, std::stoi(o));
 	Key.clear();
 	Task b(tmpa);
 	Tasks.push_back(b);
@@ -159,13 +138,13 @@ void MainGame::CreateTask(std::string TaskName)
 void MainGame::CoutCorrectKey(std::string t)
 {
 	t = KeypadTranslate(t);
-	if (t == "Space") { Key.append(" "); }
-	else if (t == "Backspace") { Key = Key.substr(0, Key.size() - 1); }
+	if (t == "Space") { RendererClass.ChangeLine(0, ' '); }
+	else if (t == "Backspace") { RendererClass.BackspaceLine(0); }
 	else if (t == "Return") { CreateTask(Key); }
 	else if (t == "Left Shift") {}
 	else if (t == "Tab") {}
 	else if (t == "Escape") { _gameState = GameState::EXIT; std::cout << "\nProgram Ended\n"; }
-	else { /*insert key*/ RendererClass.ChangeLine(0, t[0]);}
+	else { /*insert key*/ RendererClass.ChangeLine(0, t[0]); }
 }
 std::string KeypadTranslate(std::string key)
 {
@@ -189,41 +168,41 @@ void MainGame::gameLoop()
 	while (_gameState != GameState::EXIT)
 	{
 		processInput();
-		HotkeyHandler(_window,WindowsHandle);
-		//MainRenderer();
-		CheckTasks(_window,&Key);
+		CheckTasks();
+		RendererClass.Render();
+		HotkeyHandler(RendererClass.WindowObject, WindowsHandle);
 	}
 }
 
-void CheckTasks(SDL_Window* _window, std::string* Key)
+void CheckTasks()
 {
 	if (sizeof(Tasks) != 0)
 	{
 		for (int i = 0; i < Tasks.size(); i++)
 		{
-			std::cout << "juoksee taustalla";
 			if (Tasks[i].GetTimeDifference() == true)
 			{
 				std::string o = Tasks[i].printname();
 				const char *Taskname = o.c_str();
 				Tasks[i].printname();
 				std::cout << "\n";
-				MessageBox(NULL, Taskname, "elixiirit kehiin",MB_OK|MB_ICONQUESTION|MB_SYSTEMMODAL|MB_SERVICE_NOTIFICATION);
+				MessageBox(NULL, Taskname, "elixiirit kehiin", MB_OK | MB_ICONQUESTION | MB_SYSTEMMODAL | MB_SERVICE_NOTIFICATION);
 				Tasks[i].SetToNormal();
 				if (Tasks[i].Single() == true)
-	//std::cout << "checking tasks";
-	SDL_SysWMinfo SystemInfo;
-	SDL_VERSION(&SystemInfo.version);
-	SDL_GetWindowWMInfo(_window, &SystemInfo);
-
-	SetHandle(SystemInfo.info.win.window);
-
+				{
+					Tasks.erase(Tasks.begin()+i);
+				}
+			}
+		}
+	}
+}
 	
 	
 
 void HotkeyHandler(SDL_Window *_window, HWND WindowsHandle)
+{
 	if (hotkeypressed == true)
-				{
+	{
 		std::cout << "Hotkey pressed";
 		SDL_RaiseWindow(_window);
 		SDL_RestoreWindow(_window);
@@ -231,10 +210,13 @@ void HotkeyHandler(SDL_Window *_window, HWND WindowsHandle)
 		hotkeypressed = false;
 
 		std::thread(HotkeyThread).detach();
-				}
+	}
+}
 
 void HotkeyThread()
+{
 	if (RegisterHotKey(NULL, 1, MOD_CONTROL, 0x42))  //0x42 is 'b'
+	{ 
 		std::cout << "Hotkey Created\n";
 	}
 

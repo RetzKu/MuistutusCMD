@@ -30,6 +30,7 @@ public:
 	vector<Texture> TextureList;
 	
 	const vector<Texture> & GetTextures() const { return TextureList; }
+	string GetLine(int index);
 	void SetRectangle(int index, SDL_Rect Rectangle);
 	void ChangeLine(int index, char Key);
 	void BackspaceLine(int index);

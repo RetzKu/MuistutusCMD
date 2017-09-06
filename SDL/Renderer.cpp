@@ -30,11 +30,12 @@ public:
 		default:
 			break;
 		}
-		_Texture = SDL_CreateTextureFromSurface(RendererObject, _Surface);
+		_Texture = SDL_CreateTextureFromSurface(RendererObject, _Surface); //leakkaa
 		SDL_QueryTexture(_Texture, NULL, NULL, &TextureWidth, &TextureHeight);
 		_Rect.h = TextureHeight;
 		_Rect.w = TextureWidth;
 		SDL_FreeSurface(_Surface);
+		
 	}
 
 	void SetLine(char Key) { _Line.push_back(Key); }
@@ -42,6 +43,7 @@ public:
 	void SetRect(SDL_Rect Rect) { _Rect = Rect; }
 	SDL_Texture* GetTexture() { return _Texture; }
 	SDL_Rect GetRectange() { return _Rect; }
+	string GetLine() { return _Line; }
 
 private:
 	SDL_Surface* _Surface;
@@ -65,6 +67,11 @@ Renderer::Renderer()
 
 Renderer::~Renderer()
 {
+}
+
+string Renderer::GetLine(int index)
+{
+	return TextureList[index].GetLine();
 }
 
 void Renderer::NewTexture(TextureType Type, string Name)
@@ -102,6 +109,7 @@ void Renderer::Render()
 		{
 			var.updatetexture(RendererObject);
 			SDL_RenderCopy(RendererObject, var.GetTexture(), 0, &var.GetRectange());
+			SDL_DestroyTexture(var.GetTexture());
 		}
 	}
 	SDL_RenderPresent(RendererObject);
