@@ -65,7 +65,6 @@ std::vector<Task> Tasks;
 
 MainGame::MainGame()
 {
-	_window = nullptr;
 	_gameState = GameState::PLAY;
 }
 
@@ -78,13 +77,8 @@ void MainGame::run()
 {
 	std::thread(HotkeyThread).detach();
 	RendererClass.AddToRenderer();
-	Text* TmpText = dynamic_cast<Text*>(RendererClass.TextureList[0]);
-	TmpText->PushBack('b');
-	//TmpText->PushBack('b');
-/*	SDL_Rect Rect = { 10,10,0,0 };
-	RendererClass.NewTexture(TextureType::Text, "Insert", Rect);
-	Rect = { 8, 11, 200, 18 };
-	RendererClass.NewTexture(TextureType::Box, "Insert Box", Rect)*/;
+	MainInsert = dynamic_cast<Text*>(RendererClass.TextureList[0]);
+	MainInsert->PushBack('b');
 	gameLoop();
 
 }
@@ -139,13 +133,14 @@ void MainGame::CreateTask(std::string TaskName)
 void MainGame::CoutCorrectKey(std::string t)
 {
 	t = KeypadTranslate(t);
-	if (t == "Space") { /*RendererClass.ChangeLine(0, ' ');*/ }
-	else if (t == "Backspace") { /*RendererClass.BackspaceLine(0);*/ }
+	if (t == "Space") { MainInsert->PushBack(' '); }
+	else if (t == "Backspace") { MainInsert->Backspace(); }
 	else if (t == "Return") { CreateTask(Key); }
 	else if (t == "Left Shift") {}
 	else if (t == "Tab") {}
 	else if (t == "Escape") { _gameState = GameState::EXIT; std::cout << "\nProgram Ended\n"; }
-	else { /*insert key*/ /*RendererClass.ChangeLine(0, t[0]);*/ }
+	else { /*insert key*/ MainInsert->PushBack(t[0]);
+	}
 }
 std::string KeypadTranslate(std::string key)
 {
@@ -173,6 +168,7 @@ void MainGame::gameLoop()
 		RendererClass.Render();
 		HotkeyHandler(RendererClass.WindowObject, WindowsHandle);
 	}
+
 }
 
 void CheckTasks()

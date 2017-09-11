@@ -5,6 +5,7 @@
 #include <SDL\SDL.h>
 #include <SDL\SDL_ttf.h>
 #include <iostream>
+#include <chrono>
 
 using std::vector;
 using std::cout;
@@ -17,9 +18,20 @@ enum TextureType
 	BoxType,
 };
 
+
+enum Boxtype
+{
+	Filled,
+	Empty,
+	Insert,
+	Button,
+};
+
 class Texture
 {
 public:
+	int frames = 0;
+
 	Texture(){}
 	Texture(SDL_Renderer* _RenderObject, SDL_Window* _WindowObject, TextureType Type) { RenderObject = _RenderObject; WindowObject = _WindowObject; _Type = Type; }
 
@@ -33,6 +45,7 @@ public:
 
 	TextureType GetType() { return _Type; }
 	void GetType(TextureType Type) { _Type = Type; }
+	
 	
 
 
@@ -50,6 +63,7 @@ class Renderer
 public:
 	Renderer();
 	~Renderer();
+	std::chrono::system_clock::time_point StartTime;
 
 	SDL_Renderer* RendererObject;
 	SDL_Window* WindowObject;
@@ -59,6 +73,18 @@ public:
 	
 	void AddToRenderer();
 	void Render();
+
+	int Frames = 0;
+	void GetFps()
+	{
+		Frames += 1;
+		std::chrono::duration<double> Seconds = std::chrono::system_clock::now() - StartTime;
+		int c = (int)Seconds.count();
+		if (c >= 1)
+			StartTime = std::chrono::system_clock::now();
+			cout << Frames;
+			Frames = 0;
+	}
 	//string GetLine(int index);
 	//void SetRectangle(int index, SDL_Rect Rectangle);
 	//void ChangeLine(int index, char Key);
@@ -101,11 +127,45 @@ public:
 		Line.push_back(Key);
 		return Line;
 	}
+	string Backspace()
+	{
+		Line = Line.substr(0, Line.size() - 1);
+		return Line;
+	}
 
 private:
 	SDL_Rect _Rect;
 	TTF_Font* _Font;
 	SDL_Color _TextColor;
 	string Line;
+};
+
+class Box : public Texture
+{
+public:
+	
+	//Constructing start
+
+
+	bool Action;
+	SDL_Rect Rect;
+	Boxtype Type;
+
+	Box(){}
+	Box(SDL_Renderer* Renderer, SDL_Rect NewRect, Boxtype NewType)
+	{
+		Texture::GetType(TextureType::BoxType);
+		Texture::RenderObject = Renderer;
+		Type = NewType;
+		Rect = NewRect;
+		CreateBox();
+	}
+	// Constructing end
+
+	//Main Functionality
+	void CreateBox();
+	SDL_Renderer* PassRenderer() { return Texture::RenderObject; }
+
+private:
 };
 

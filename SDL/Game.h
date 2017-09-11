@@ -28,7 +28,7 @@ public:
 
 	void run();
 	void CreateTask(std::string);
-	void SetTaskName(std::string name) { SDL_SetWindowTitle(_window, name.c_str()); }
+
 	std::string Key;
 	std::vector<std::string> KeyList;
 
@@ -48,7 +48,7 @@ public:
 	
 	/* New Experimental renderer class*/
 	Renderer RendererClass;
-
+	Text* MainInsert;
 
 	struct tm tmTime;
 	struct tm EndLine;
@@ -65,8 +65,6 @@ private:
 	void gameLoop();
 
 	HWND hApp;
-	SDL_Window* _window;
-	SDL_Renderer* _renderer;
 
 	HWND WindowsHandle;
 

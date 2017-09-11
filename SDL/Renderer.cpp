@@ -71,6 +71,9 @@ void Renderer::AddToRenderer()
 	SDL_Rect Rect = { 10,10,0,0 };
 	Text* NewTexture = new Text(RendererObject, Rect);
 	TextureList.push_back(NewTexture);
+	Rect = { 10,30,30,30 };
+	Box* NewBox = new Box(RendererObject, Rect, Boxtype::Insert);
+	TextureList.push_back(NewBox);
 }
 
 Renderer::Renderer()
@@ -78,12 +81,18 @@ Renderer::Renderer()
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_CreateWindowAndRenderer(400, 400, 0, &WindowObject, &RendererObject);
 	SDL_SetRenderDrawColor(RendererObject, 255, 255, 255, 0xFF);
+	StartTime = std::chrono::system_clock::now();
 }
 
 
 Renderer::~Renderer()
 {
-	delete[] TextureList.data();
+	for each(Texture* var in TextureList)
+		delete var;
+	TextureList.clear();
+
+	SDL_DestroyRenderer(RendererObject);
+	SDL_DestroyWindow(WindowObject);
 }
 
 
@@ -91,6 +100,7 @@ Renderer::~Renderer()
 void Renderer::Render()
 {
 	SDL_RenderClear(RendererObject);
+	GetFps();
 	if (sizeof(TextureList) != 0)
 	{
 		for each (Texture* var in TextureList)
@@ -105,4 +115,16 @@ void Renderer::Render()
 		}
 	}
 	SDL_RenderPresent(RendererObject);
+}
+
+void Box::CreateBox()
+{
+	switch (Type)
+	{
+	case Boxtype::Insert:
+		SDL_SetRenderDrawColor(RenderObject, 0, 0, 0, 0xFF);
+		SDL_RenderDrawRect(RenderObject, &Rect);
+		SDL_SetRenderDrawColor(RenderObject, 255, 255, 255, 0xFF);
+		break;
+	}
 }
