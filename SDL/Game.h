@@ -10,7 +10,6 @@
 #include <chrono>
 #include <thread>
 #include <memory>
-#include "Input_Manager.h"
 #include <Windows.h>
 #include <SDL\SDL_syswm.h>
 #include <algorithm>
@@ -28,8 +27,6 @@ public:
 	~MainGame();
 
 	void run();
-	//void MakeTimer(std::string);
-	//void CheckIfCompleted(std::string);
 	void CreateTask(std::string);
 	void SetTaskName(std::string name) { SDL_SetWindowTitle(_window, name.c_str()); }
 	std::string Key;

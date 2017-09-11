@@ -4,7 +4,6 @@
 
 
 
-mouse_Pos* Mouse = new mouse_Pos(0,0);
 MSG msg = { 0 };
 bool hotkeypressed = false;
 
@@ -78,10 +77,16 @@ MainGame::~MainGame()
 void MainGame::run()
 {
 	std::thread(HotkeyThread).detach();
-	RendererClass.NewTexture(TextureType::Text, "Insert");
+	RendererClass.AddToRenderer();
+	Text* TmpText = dynamic_cast<Text*>(RendererClass.TextureList[0]);
+	TmpText->PushBack('b');
+	//TmpText->PushBack('b');
+/*	SDL_Rect Rect = { 10,10,0,0 };
+	RendererClass.NewTexture(TextureType::Text, "Insert", Rect);
+	Rect = { 8, 11, 200, 18 };
+	RendererClass.NewTexture(TextureType::Box, "Insert Box", Rect)*/;
 	gameLoop();
 
-	delete Mouse;
 }
 
 void MainGame::processInput()
@@ -96,10 +101,6 @@ void MainGame::processInput()
 				_gameState = GameState::EXIT;
 				break;
 
-			case SDL_MOUSEMOTION:
-				Mouse->Get_M_Location(evnt.motion.x, evnt.motion.y);
-				Mouse->Box(250, 270, 100, 100);
-				break;
 
 			case SDL_KEYDOWN:
 				CoutCorrectKey(SDL_GetScancodeName(evnt.key.keysym.scancode));
@@ -113,7 +114,7 @@ void MainGame::processInput()
 void MainGame::CreateTask(std::string TaskName)
 {
 	std::string o;
-	Key = RendererClass.GetLine(0);
+	//Key = RendererClass.GetLine(0);
 	bool Singleuse = false;
 	if (Key.back() == 'S')
 	{
@@ -138,13 +139,13 @@ void MainGame::CreateTask(std::string TaskName)
 void MainGame::CoutCorrectKey(std::string t)
 {
 	t = KeypadTranslate(t);
-	if (t == "Space") { RendererClass.ChangeLine(0, ' '); }
-	else if (t == "Backspace") { RendererClass.BackspaceLine(0); }
+	if (t == "Space") { /*RendererClass.ChangeLine(0, ' ');*/ }
+	else if (t == "Backspace") { /*RendererClass.BackspaceLine(0);*/ }
 	else if (t == "Return") { CreateTask(Key); }
 	else if (t == "Left Shift") {}
 	else if (t == "Tab") {}
 	else if (t == "Escape") { _gameState = GameState::EXIT; std::cout << "\nProgram Ended\n"; }
-	else { /*insert key*/ RendererClass.ChangeLine(0, t[0]); }
+	else { /*insert key*/ /*RendererClass.ChangeLine(0, t[0]);*/ }
 }
 std::string KeypadTranslate(std::string key)
 {
