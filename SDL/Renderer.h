@@ -83,7 +83,7 @@ public:
 		if (c > 1)
 		{
 			StartTime = std::chrono::system_clock::now();
-			cout << Frames;
+			cout << "\nFps: " << Frames;
 			Frames = 0;
 		}
 	}
