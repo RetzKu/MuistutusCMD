@@ -139,7 +139,7 @@ void MainGame::CoutCorrectKey(std::string t)
 	else if (t == "Left Shift") {}
 	else if (t == "Tab") {}
 	else if (t == "Escape") { _gameState = GameState::EXIT; std::cout << "\nProgram Ended\n"; }
-	else { /*insert key*/ MainInsert->PushBack(t[0]);
+	else { /*insert key*/ MainInsert->PushBack(t[0]); Key.append(t);
 	}
 }
 std::string KeypadTranslate(std::string key)

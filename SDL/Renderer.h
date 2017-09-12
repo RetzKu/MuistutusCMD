@@ -79,11 +79,13 @@ public:
 	{
 		Frames += 1;
 		std::chrono::duration<double> Seconds = std::chrono::system_clock::now() - StartTime;
-		int c = (int)Seconds.count();
-		if (c >= 1)
+		double c = (double)Seconds.count();
+		if (c > 1)
+		{
 			StartTime = std::chrono::system_clock::now();
 			cout << Frames;
 			Frames = 0;
+		}
 	}
 	//string GetLine(int index);
 	//void SetRectangle(int index, SDL_Rect Rectangle);
