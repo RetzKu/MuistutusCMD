@@ -44,7 +44,6 @@ public:
 	SDL_Surface *Surface;
 
 	void CoutCorrectKey(std::string);
-
 	
 	/* New Experimental renderer class*/
 	Renderer RendererClass;

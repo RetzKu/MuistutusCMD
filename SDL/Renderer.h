@@ -80,6 +80,7 @@ public:
 		Frames += 1;
 		std::chrono::duration<double> Seconds = std::chrono::system_clock::now() - StartTime;
 		double c = (double)Seconds.count();
+
 		if (c > 1)
 		{
 			StartTime = std::chrono::system_clock::now();

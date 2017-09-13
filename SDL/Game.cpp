@@ -163,12 +163,17 @@ void MainGame::gameLoop()
 {
 	while (_gameState != GameState::EXIT)
 	{
-		processInput();
-		CheckTasks();
+		std::chrono::high_resolution_clock::time_point Target = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(694/100);
+		std::chrono::high_resolution_clock::time_point Now = std::chrono::high_resolution_clock::now();
+		while (Now <= Target)
+		{
+			processInput();
+			CheckTasks();
+			HotkeyHandler(RendererClass.WindowObject, WindowsHandle);
+			Now = std::chrono::high_resolution_clock::now();
+		}
 		RendererClass.Render();
-		HotkeyHandler(RendererClass.WindowObject, WindowsHandle);
 	}
-
 }
 
 void CheckTasks()
