@@ -16,6 +16,7 @@
 #include <vector>
 #include <SDL\SDL_ttf.h>
 #include <functional>
+#include "Input.h"
 
 enum class GameState{PLAY, EXIT};
 
@@ -44,10 +45,15 @@ public:
 	SDL_Surface *Surface;
 
 	void CoutCorrectKey(std::string);
+
 	
 	/* New Experimental renderer class*/
 	Renderer RendererClass;
 	Text* MainInsert;
+	Box* InsertBox;
+
+	/*New InputClass for handling clicks and inserts*/
+	Input InputClass;
 
 	struct tm tmTime;
 	struct tm EndLine;

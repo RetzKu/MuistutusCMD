@@ -66,14 +66,20 @@
 //	int TextureHeight;
 //};
 
-void Renderer::AddToRenderer()
+Texture* Renderer::AddToRenderer(TextureType Type, SDL_Rect Rect)
 {
-	SDL_Rect Rect = { 10,10,0,0 };
-	Text* NewTexture = new Text(RendererObject, Rect);
-	TextureList.push_back(NewTexture);
-	Rect = { 10,30,30,30 };
-	Box* NewBox = new Box(RendererObject, Rect, Boxtype::Insert);
-	TextureList.push_back(NewBox);
+	if (Type == TextureType::TextType)
+	{
+		Text* NewTexture = new Text(RendererObject, Rect);
+		TextureList.push_back(NewTexture);
+		return NewTexture;
+	}
+	else if (Type == TextureType::BoxType)
+	{
+		Box* NewBox = new Box(RendererObject, Rect, Boxtype::Insert);
+		TextureList.push_back(NewBox);
+		return NewBox;
+	}
 }
 
 Renderer::Renderer()
@@ -112,19 +118,15 @@ void Renderer::Render()
 				SDL_RenderCopy(var->Texture::RenderObject, var->Texture::TextureData(), 0, TmpText->GetRect());
 				SDL_DestroyTexture(var->Texture::TextureData());
 			}
+			else
+			{
+				SDL_SetRenderDrawColor(var->Texture::RenderObject, 0, 0, 0, 0xFF);
+				Box* TmpBox = dynamic_cast<Box*>(var);
+				SDL_RenderDrawRect(var->Texture::RenderObject, TmpBox->GetRect());
+				SDL_SetRenderDrawColor(var->Texture::RenderObject, 255, 255, 255, 0xFF);
+			}
 		}
 	}
 	SDL_RenderPresent(RendererObject);
 }
 
-void Box::CreateBox()
-{
-	switch (Type)
-	{
-	case Boxtype::Insert:
-		SDL_SetRenderDrawColor(RenderObject, 0, 0, 0, 0xFF);
-		SDL_RenderDrawRect(RenderObject, &Rect);
-		SDL_SetRenderDrawColor(RenderObject, 255, 255, 255, 0xFF);
-		break;
-	}
-}

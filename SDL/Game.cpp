@@ -71,14 +71,19 @@ MainGame::MainGame()
 
 MainGame::~MainGame()
 {
+	//delete InputClass;
 }
 
 void MainGame::run()
 {
 	std::thread(HotkeyThread).detach();
-	RendererClass.AddToRenderer();
-	MainInsert = dynamic_cast<Text*>(RendererClass.TextureList[0]);
-	MainInsert->PushBack('b');
+
+	Texture* B = RendererClass.AddToRenderer(TextureType::BoxType, SDL_Rect{ 10,100,150,18 });
+	InsertBox = dynamic_cast<Box*>(B);
+
+	B = RendererClass.AddToRenderer(TextureType::TextType, SDL_Rect{ 10,10,0,0 });
+	MainInsert = dynamic_cast<Text*>(B);
+
 	gameLoop();
 
 }
@@ -167,10 +172,11 @@ void MainGame::gameLoop()
 		std::chrono::high_resolution_clock::time_point Now = std::chrono::high_resolution_clock::now();
 		while (Now <= Target)
 		{
+			Now = std::chrono::high_resolution_clock::now();
 			processInput();
 			CheckTasks();
 			HotkeyHandler(RendererClass.WindowObject, WindowsHandle);
-			Now = std::chrono::high_resolution_clock::now();
+			InputClass.MouseLoc(RendererClass.WindowObject);
 		}
 		RendererClass.Render();
 	}
