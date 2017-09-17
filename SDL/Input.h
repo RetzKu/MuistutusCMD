@@ -13,8 +13,12 @@ public:
 	~Input();
 
 	/*Checks all functions inside this class. Put this in main gameloop*/
-	void RunInput();
-	SDL_Rect* MouseLoc(SDL_Window* WindowObject);
+	void RunInput(SDL_Event* Event);
+	void ProcessClick();
+	SDL_Rect* MouseLoc();
+	
+	void SetMouseLoc(SDL_Rect* MouseLoc) { _MouseLoc = MouseLoc; }
+	SDL_Rect* GetMouseLoc() { return _MouseLoc; }
 
 private:
 	SDL_Window* _WindowObject;

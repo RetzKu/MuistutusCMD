@@ -91,22 +91,21 @@ void MainGame::run()
 void MainGame::processInput()
 {
 	SDL_Event evnt;
+
 	while (SDL_PollEvent(&evnt))
 	{
-
 		switch (evnt.type)
 			{
 			case SDL_QUIT:
 				_gameState = GameState::EXIT;
 				break;
-
-
 			case SDL_KEYDOWN:
 				CoutCorrectKey(SDL_GetScancodeName(evnt.key.keysym.scancode));
 				break;
-
+			case SDL_MOUSEBUTTONDOWN:
+				InputClass.RunInput(&evnt);
+				break;
 		}
-
 	}
 }
 
@@ -176,7 +175,6 @@ void MainGame::gameLoop()
 			processInput();
 			CheckTasks();
 			HotkeyHandler(RendererClass.WindowObject, WindowsHandle);
-			InputClass.MouseLoc(RendererClass.WindowObject);
 		}
 		RendererClass.Render();
 	}
