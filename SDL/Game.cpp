@@ -71,12 +71,15 @@ MainGame::MainGame()
 
 MainGame::~MainGame()
 {
-	//delete InputClass;
+	delete InputClass;
 }
 
 void MainGame::run()
 {
+	InputClass = new Input(RendererClass.WindowObject , &RendererClass);
+
 	std::thread(HotkeyThread).detach();
+	std::thread(CheckTasks).detach();
 
 	Texture* B = RendererClass.AddToRenderer(TextureType::BoxType, SDL_Rect{ 10,100,150,18 });
 	InsertBox = dynamic_cast<Box*>(B);
@@ -103,7 +106,7 @@ void MainGame::processInput()
 				CoutCorrectKey(SDL_GetScancodeName(evnt.key.keysym.scancode));
 				break;
 			case SDL_MOUSEBUTTONDOWN:
-				InputClass.RunInput(&evnt);
+				InputClass->RunInput(&evnt);
 				break;
 		}
 	}
@@ -167,13 +170,12 @@ void MainGame::gameLoop()
 {
 	while (_gameState != GameState::EXIT)
 	{
-		std::chrono::high_resolution_clock::time_point Target = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(694/100);
-		std::chrono::high_resolution_clock::time_point Now = std::chrono::high_resolution_clock::now();
+		std::chrono::system_clock::time_point Target = std::chrono::system_clock::now() + std::chrono::milliseconds(694/100);
+		std::chrono::system_clock::time_point Now = std::chrono::system_clock::now();
 		while (Now <= Target)
 		{
-			Now = std::chrono::high_resolution_clock::now();
+			Now = std::chrono::system_clock::now();
 			processInput();
-			CheckTasks();
 			HotkeyHandler(RendererClass.WindowObject, WindowsHandle);
 		}
 		RendererClass.Render();
@@ -182,24 +184,29 @@ void MainGame::gameLoop()
 
 void CheckTasks()
 {
-	if (sizeof(Tasks) != 0)
+	using namespace std::chrono_literals;
+	while (true)
 	{
-		for (int i = 0; i < Tasks.size(); i++)
+		if (Tasks.size() != 0)
 		{
-			if (Tasks[i].GetTimeDifference() == true)
+			for (int i = 0; i < Tasks.size(); i++)
 			{
-				std::string o = Tasks[i].printname();
-				const char *Taskname = o.c_str();
-				Tasks[i].printname();
-				std::cout << "\n";
-				MessageBox(NULL, Taskname, "elixiirit kehiin", MB_OK | MB_ICONQUESTION | MB_SYSTEMMODAL | MB_SERVICE_NOTIFICATION);
-				Tasks[i].SetToNormal();
-				if (Tasks[i].Single() == true)
+				if (Tasks[i].GetTimeDifference() == true)
 				{
-					Tasks.erase(Tasks.begin()+i);
+					std::string o = Tasks[i].printname();
+					const char *Taskname = o.c_str();
+					Tasks[i].printname();
+					std::cout << "\n";
+					MessageBox(NULL, Taskname, "elixiirit kehiin", MB_OK | MB_ICONQUESTION | MB_SYSTEMMODAL | MB_SERVICE_NOTIFICATION);
+					Tasks[i].SetToNormal();
+					if (Tasks[i].Single() == true)
+					{
+						Tasks.erase(Tasks.begin()+i);
+					}
 				}
 			}
 		}
+		std::this_thread::sleep_for(1s);
 	}
 }
 	
@@ -228,19 +235,20 @@ void HotkeyThread()
 
 	while (hotkeypressed == false)
 	{
-		while (GetMessage(&msg, NULL, 0, 0) != 0)
+		if (WaitMessage())
 		{
-			std::cout << "message";
-
-			switch (msg.message)
+			while (GetMessage(&msg, NULL, 0, 0) != 0)
 			{
-			case WM_HOTKEY:
-				hotkeypressed = true;
-				std::cout << "hotkey pressed";
-				UnregisterHotKey(0, 1);
-				break;
-			default:
-				break;
+				switch (msg.message)
+				{
+				case WM_HOTKEY:
+					hotkeypressed = true;
+					std::cout << "hotkey pressed";
+					UnregisterHotKey(0, 1);
+					break;
+				default:
+					break;
+				}
 			}
 		}
 	}

@@ -31,6 +31,8 @@ class Texture
 {
 public:
 
+	SDL_Rect Rect;
+
 	Texture(){}
 	Texture(SDL_Renderer* _RenderObject, SDL_Window* _WindowObject, TextureType Type) { RenderObject = _RenderObject; WindowObject = _WindowObject; _Type = Type; }
 
@@ -44,9 +46,6 @@ public:
 
 	TextureType GetType() { return _Type; }
 	void GetType(TextureType Type) { _Type = Type; }
-	
-	
-
 
 	SDL_Renderer* RenderObject;
 	SDL_Window* WindowObject;
@@ -107,7 +106,7 @@ public:
 	}
 	Text(SDL_Renderer* RenderObject, SDL_Rect Rect)
 	{
-		_Rect = Rect;
+		Texture::Rect = Rect;
 		Texture::GetType(TextureType::TextType);
 		Texture::RenderObject = RenderObject;
 		TTF_Init(); Line = ""; 
@@ -118,11 +117,9 @@ public:
 	{
 		Texture::Surface(TTF_RenderText_Solid(_Font, Line.c_str(), _TextColor)); 
 		Texture::TextureData(SDL_CreateTextureFromSurface(Texture::RenderObject,Texture::Surface()));
-		SDL_QueryTexture(Texture::TextureData(), NULL, NULL, &_Rect.w, &_Rect.h);
+		SDL_QueryTexture(Texture::TextureData(), NULL, NULL, &Texture::Rect.w, &Texture::Rect.h);
 		SDL_FreeSurface(Texture::Surface());
 	}
-	
-	SDL_Rect* GetRect() { return &_Rect; }
 
 	string PushBack(char Key)
 	{
@@ -136,7 +133,6 @@ public:
 	}
 
 private:
-	SDL_Rect _Rect;
 	TTF_Font* _Font;
 	SDL_Color _TextColor;
 	string Line;
@@ -148,9 +144,7 @@ public:
 	
 	//Constructing start
 
-
 	bool Action;
-	SDL_Rect Rect;
 	Boxtype Type;
 
 	Box(){}
@@ -159,13 +153,12 @@ public:
 		Texture::GetType(TextureType::BoxType);
 		Texture::RenderObject = Renderer;
 		Type = NewType;
-		Rect = NewRect;
+		Texture::Rect = NewRect;
 	}
 	// Constructing end
 
 	//Main Functionality
 	SDL_Renderer* PassRenderer() { return Texture::RenderObject; }
-	SDL_Rect* GetRect() { return &Rect; }
 
 private:
 };

@@ -53,7 +53,7 @@ public:
 	Box* InsertBox;
 
 	/*New InputClass for handling clicks and inserts*/
-	Input InputClass;
+	Input* InputClass;
 
 	struct tm tmTime;
 	struct tm EndLine;

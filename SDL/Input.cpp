@@ -11,7 +11,8 @@ void Input::RunInput(SDL_Event* Event)
 	switch (Event->type)
 	{
 		case SDL_MOUSEBUTTONDOWN:
-			std::cout << "Mouse Button Pressed";
+			std::cout << "\nMouse Button Pressed ";
+			MouseLoc();
 			ProcessClick();
 			break;
 	}
@@ -19,15 +20,15 @@ void Input::RunInput(SDL_Event* Event)
 
 void Input::ProcessClick()
 {
-	
+	TextureInfo();
 }
 
 SDL_Rect* Input::MouseLoc()
 {
 	SDL_Rect Mloc;
 	SDL_GetMouseState(&Mloc.x, &Mloc.y);
-	SetMouseLoc(&Mloc);
-	std::cout << "\nx: " << Mloc.x << " Y: " << Mloc.y;
+	SetMouseLoc(Mloc);
+	std::cout << "x: " << Mloc.x << " Y: " << Mloc.y;
 	return &Mloc;
 }
 

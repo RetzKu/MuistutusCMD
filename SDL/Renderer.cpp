@@ -115,14 +115,15 @@ void Renderer::Render()
 			{
 				Text* TmpText = dynamic_cast<Text*>(var);
 				TmpText->Update();
-				SDL_RenderCopy(var->Texture::RenderObject, var->Texture::TextureData(), 0, TmpText->GetRect());
+
+				SDL_RenderCopy(var->Texture::RenderObject, var->Texture::TextureData(), 0, &var->Rect);
 				SDL_DestroyTexture(var->Texture::TextureData());
 			}
 			else
 			{
 				SDL_SetRenderDrawColor(var->Texture::RenderObject, 0, 0, 0, 0xFF);
 				Box* TmpBox = dynamic_cast<Box*>(var);
-				SDL_RenderDrawRect(var->Texture::RenderObject, TmpBox->GetRect());
+				SDL_RenderDrawRect(var->Texture::RenderObject, &TmpBox->Rect);
 				SDL_SetRenderDrawColor(var->Texture::RenderObject, 255, 255, 255, 0xFF);
 			}
 		}
