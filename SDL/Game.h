@@ -16,6 +16,7 @@
 #include <vector>
 #include <SDL\SDL_ttf.h>
 #include <functional>
+#include "Input.h"
 
 enum class GameState{PLAY, EXIT};
 
@@ -49,6 +50,10 @@ public:
 	/* New Experimental renderer class*/
 	Renderer RendererClass;
 	Text* MainInsert;
+	Box* InsertBox;
+
+	/*New InputClass for handling clicks and inserts*/
+	Input InputClass;
 
 	struct tm tmTime;
 	struct tm EndLine;

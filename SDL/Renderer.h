@@ -30,7 +30,6 @@ enum Boxtype
 class Texture
 {
 public:
-	int frames = 0;
 
 	Texture(){}
 	Texture(SDL_Renderer* _RenderObject, SDL_Window* _WindowObject, TextureType Type) { RenderObject = _RenderObject; WindowObject = _WindowObject; _Type = Type; }
@@ -71,7 +70,7 @@ public:
 	vector<Texture*> TextureList;
 
 	
-	void AddToRenderer();
+	Texture* AddToRenderer(TextureType Type, SDL_Rect Rect);
 	void Render();
 
 	int Frames = 0;
@@ -80,6 +79,7 @@ public:
 		Frames += 1;
 		std::chrono::duration<double> Seconds = std::chrono::system_clock::now() - StartTime;
 		double c = (double)Seconds.count();
+
 		if (c > 1)
 		{
 			StartTime = std::chrono::system_clock::now();
@@ -160,13 +160,12 @@ public:
 		Texture::RenderObject = Renderer;
 		Type = NewType;
 		Rect = NewRect;
-		CreateBox();
 	}
 	// Constructing end
 
 	//Main Functionality
-	void CreateBox();
 	SDL_Renderer* PassRenderer() { return Texture::RenderObject; }
+	SDL_Rect* GetRect() { return &Rect; }
 
 private:
 };
