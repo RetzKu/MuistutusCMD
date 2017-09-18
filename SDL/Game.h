@@ -44,9 +44,6 @@ public:
 	SDL_Texture *Texture1, *Texture2;
 	SDL_Surface *Surface;
 
-	void CoutCorrectKey(std::string);
-
-	
 	/* New Experimental renderer class*/
 	Renderer RendererClass;
 	Text* MainInsert;

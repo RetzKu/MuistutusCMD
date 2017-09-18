@@ -20,6 +20,8 @@ public:
 
 	void SetMouseLoc(SDL_Rect MouseLoc) { _MouseLoc.x = MouseLoc.x; _MouseLoc.y = MouseLoc.y; }
 	SDL_Rect GetMouseLoc() { return _MouseLoc; }
+	void CoutCorrectKey(std::string t);
+	std::string KeypadTranslate(std::string key);
 
 	Texture* TextureInfo()
 	{
@@ -39,6 +41,8 @@ public:
 			return nullptr;
 		}
 	}
+
+	Texture* SelectedTexture;
 
 private:
 	SDL_Window* _WindowObject;

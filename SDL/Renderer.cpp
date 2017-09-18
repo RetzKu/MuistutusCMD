@@ -123,6 +123,12 @@ void Renderer::Render()
 			{
 				SDL_SetRenderDrawColor(var->Texture::RenderObject, 0, 0, 0, 0xFF);
 				Box* TmpBox = dynamic_cast<Box*>(var);
+				if (TmpBox->Type == Boxtype::Insert)
+				{
+					var->Update();
+					SDL_RenderCopy(var->Texture::RenderObject, var->Texture::TextureData(), 0, &TmpBox->TextRect);
+					SDL_DestroyTexture(var->Texture::TextureData());
+				}
 				SDL_RenderDrawRect(var->Texture::RenderObject, &TmpBox->Rect);
 				SDL_SetRenderDrawColor(var->Texture::RenderObject, 255, 255, 255, 0xFF);
 			}

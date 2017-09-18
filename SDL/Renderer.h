@@ -146,6 +146,7 @@ public:
 
 	bool Action;
 	Boxtype Type;
+	SDL_Rect TextRect;
 
 	Box(){}
 	Box(SDL_Renderer* Renderer, SDL_Rect NewRect, Boxtype NewType)
@@ -154,12 +155,54 @@ public:
 		Texture::RenderObject = Renderer;
 		Type = NewType;
 		Texture::Rect = NewRect;
+
+		if (Type == Insert)
+		{
+			TextRect = NewRect;
+			TextRect.x += 3;
+			TextRect.y -= 1;
+			TextRect.w = 0;
+			TextRect.h = 0;
+			TTF_Init(); Line = ""; 
+			_Font = TTF_OpenFont("arial.ttf", 18); 
+			_TextColor = { 0, 0, 0, 255 };
+		}
 	}
+
 	// Constructing end
 
 	//Main Functionality
 	SDL_Renderer* PassRenderer() { return Texture::RenderObject; }
 
+	void Update() override
+	{
+		Texture::Surface(TTF_RenderText_Solid(_Font, Line.c_str(), _TextColor)); 
+		Texture::TextureData(SDL_CreateTextureFromSurface(Texture::RenderObject,Texture::Surface()));
+		SDL_QueryTexture(Texture::TextureData(), NULL, NULL, &TextRect.w, &TextRect.h);
+		if (TextRect.w > Rect.w) {
+			Backspace();
+			Texture::Surface(TTF_RenderText_Solid(_Font, Line.c_str(), _TextColor));
+			Texture::TextureData(SDL_CreateTextureFromSurface(Texture::RenderObject, Texture::Surface()));
+			SDL_QueryTexture(Texture::TextureData(), NULL, NULL, &TextRect.w, &TextRect.h);
+			SDL_FreeSurface(Texture::Surface());
+		}
+	}
+	
+	string PushBack(char Key)
+	{
+		Line.push_back(Key);
+		return Line;
+	}
+
+	string Backspace()
+	{
+		Line = Line.substr(0, Line.size() - 1);
+		return Line;
+	}
+
 private:
+	TTF_Font* _Font;
+	SDL_Color _TextColor;
+	string Line;
 };
 

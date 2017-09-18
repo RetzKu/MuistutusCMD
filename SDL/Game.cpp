@@ -81,7 +81,7 @@ void MainGame::run()
 	std::thread(HotkeyThread).detach();
 	std::thread(CheckTasks).detach();
 
-	Texture* B = RendererClass.AddToRenderer(TextureType::BoxType, SDL_Rect{ 10,100,150,18 });
+	Texture* B = RendererClass.AddToRenderer(TextureType::BoxType, SDL_Rect{ 10,100,200,18 });
 	InsertBox = dynamic_cast<Box*>(B);
 
 	B = RendererClass.AddToRenderer(TextureType::TextType, SDL_Rect{ 10,10,0,0 });
@@ -98,17 +98,12 @@ void MainGame::processInput()
 	while (SDL_PollEvent(&evnt))
 	{
 		switch (evnt.type)
-			{
+		{
 			case SDL_QUIT:
 				_gameState = GameState::EXIT;
 				break;
-			case SDL_KEYDOWN:
-				CoutCorrectKey(SDL_GetScancodeName(evnt.key.keysym.scancode));
-				break;
-			case SDL_MOUSEBUTTONDOWN:
-				InputClass->RunInput(&evnt);
-				break;
 		}
+		InputClass->RunInput(&evnt);
 	}
 }
 
@@ -137,48 +132,16 @@ void MainGame::CreateTask(std::string TaskName)
 	Tasks.push_back(b);
 }
 
-void MainGame::CoutCorrectKey(std::string t)
-{
-	t = KeypadTranslate(t);
-	if (t == "Space") { MainInsert->PushBack(' '); }
-	else if (t == "Backspace") { MainInsert->Backspace(); }
-	else if (t == "Return") { CreateTask(Key); }
-	else if (t == "Left Shift") {}
-	else if (t == "Tab") {}
-	else if (t == "Escape") { _gameState = GameState::EXIT; std::cout << "\nProgram Ended\n"; }
-	else { /*insert key*/ MainInsert->PushBack(t[0]); Key.append(t);
-	}
-}
-std::string KeypadTranslate(std::string key)
-{
-	if (key == "Keypad 1") {key = "1";}
-	else if(key == "Keypad 2") {key = "2";}
-	else if(key == "Keypad 3") {key = "3";}
-	else if(key == "Keypad 4") {key = "4";}
-	else if(key == "Keypad 5") {key = "5";}
-	else if(key == "Keypad 6") {key = "6";}
-	else if(key == "Keypad 7") {key = "7";}
-	else if(key == "Keypad 8") {key = "8";}
-	else if(key == "Keypad 9") {key = "9";}
-	else if(key == "Keypad 0") {key = "0";}
-	else if(key == "Keypad +") {key = "+";}
-	else if (key == "Keypad Enter") { key = "Return"; }
-	return key;
-}
 
 void MainGame::gameLoop()
 {
+	using namespace std::chrono_literals;
 	while (_gameState != GameState::EXIT)
 	{
-		std::chrono::system_clock::time_point Target = std::chrono::system_clock::now() + std::chrono::milliseconds(694/100);
-		std::chrono::system_clock::time_point Now = std::chrono::system_clock::now();
-		while (Now <= Target)
-		{
-			Now = std::chrono::system_clock::now();
-			processInput();
-			HotkeyHandler(RendererClass.WindowObject, WindowsHandle);
-		}
+		HotkeyHandler(RendererClass.WindowObject, WindowsHandle);
+		processInput();
 		RendererClass.Render();
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 	}
 }
 
@@ -206,7 +169,7 @@ void CheckTasks()
 				}
 			}
 		}
-		std::this_thread::sleep_for(1s);
+		std::this_thread::sleep_for(0.5s);
 	}
 }
 	
