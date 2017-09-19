@@ -7,61 +7,8 @@
 MSG msg = { 0 };
 bool hotkeypressed = false;
 
-void CheckTasks();
-std::string KeypadTranslate(std::string key);
 void HotkeyThread();
 void HotkeyHandler(SDL_Window* _window, HWND WindowsHandle);
-
-struct TriggerTimer
-{
-public:
-	TriggerTimer() {}
-	TriggerTimer(std::string Name, bool Singleuse, int _RecallInterval) { TaskName = Name; _Singleuse = Singleuse; TimeNow = std::chrono::system_clock::now(); RecallInterval = _RecallInterval; TimeToTrigger = false; }
-	std::string TaskName;
-	bool _Singleuse;
-	int RecallInterval;
-	std::chrono::system_clock::time_point TimeNow;
-	bool TimeToTrigger;
-
-}TriggerTime;
-
-
-
-class Task
-{
-public:
-	Task(struct TriggerTimer a) { _TaskData = a; };
-
-	std::string printname() { std::cout << _TaskData.TaskName; return _TaskData.TaskName; }
-	void SetToNormal()
-	{
-		_TaskData.TimeNow = std::chrono::system_clock::now();
-		_TaskData.TimeToTrigger = false;
-	}
-	bool GetTimeDifference()
-	{
-		std::chrono::duration<double> Seconds = std::chrono::system_clock::now() - _TaskData.TimeNow;
-		auto i = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - _TaskData.TimeNow);
-		int c = (int)Seconds.count();
-		if (c > _TaskData.RecallInterval)
-		{
-			_TaskData.TimeToTrigger = true;
-			//run main task
-		}
-		return _TaskData.TimeToTrigger;
-	}
-	bool Single()
-	{
-		return _TaskData._Singleuse;
-	}
-	
-private:
-	TriggerTimer _TaskData;
-};
-
-std::vector<Task> Tasks;
-
-
 
 MainGame::MainGame()
 {
@@ -72,19 +19,22 @@ MainGame::MainGame()
 MainGame::~MainGame()
 {
 	delete InputClass;
+	delete TaskClass;
 }
 
 void MainGame::run()
 {
 	InputClass = new Input(RendererClass.WindowObject , &RendererClass);
+	TaskClass = new TaskFrame(&RendererClass);
+
+	TaskClass->CreateTask("pökäle", false, 20);
 
 	std::thread(HotkeyThread).detach();
-	std::thread(CheckTasks).detach();
 
-	Texture* B = RendererClass.AddToRenderer(Boxtype::Insert, SDL_Rect{ 5,300,300,18 }, "Task Name");
+	Texture* B = RendererClass.AddToRenderer(Boxtype::Insert, SDL_Rect{ 5,300,240,18 }, "Task Name");
 	InsertBox = dynamic_cast<Box*>(B);
 
-	B = RendererClass.AddToRenderer(Boxtype::Insert, SDL_Rect{ 312,300,80,18 }, "Task Time");
+	B = RendererClass.AddToRenderer(Boxtype::Insert, SDL_Rect{ 258,300,80,18 }, "Task Time");
 
 	B = RendererClass.AddToRenderer(TextureType::TextType, SDL_Rect{ 10,10,0,0 }, "Running Task");
 	MainInsert = dynamic_cast<Text*>(B);
@@ -109,13 +59,7 @@ void MainGame::processInput()
 	}
 }
 
-//void MainGame::CreateTask(std::string TaskName)
-//{
-//	TriggerTimer tmpa = TriggerTimer(Key,Singleuse, std::stoi(o));
-//	Key.clear();
-//	Task b(tmpa);
-//	Tasks.push_back(b);
-//}
+
 
 
 void MainGame::gameLoop()
@@ -130,33 +74,6 @@ void MainGame::gameLoop()
 	}
 }
 
-void CheckTasks()
-{
-	using namespace std::chrono_literals;
-	while (true)
-	{
-		if (Tasks.size() != 0)
-		{
-			for (int i = 0; i < Tasks.size(); i++)
-			{
-				if (Tasks[i].GetTimeDifference() == true)
-				{
-					std::string o = Tasks[i].printname();
-					const char *Taskname = o.c_str();
-					Tasks[i].printname();
-					std::cout << "\n";
-					MessageBox(NULL, Taskname, "elixiirit kehiin", MB_OK | MB_ICONQUESTION | MB_SYSTEMMODAL | MB_SERVICE_NOTIFICATION);
-					Tasks[i].SetToNormal();
-					if (Tasks[i].Single() == true)
-					{
-						Tasks.erase(Tasks.begin()+i);
-					}
-				}
-			}
-		}
-		std::this_thread::sleep_for(0.5s);
-	}
-}
 	
 	
 

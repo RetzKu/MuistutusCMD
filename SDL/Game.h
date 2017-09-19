@@ -17,6 +17,7 @@
 #include <SDL\SDL_ttf.h>
 #include <functional>
 #include "Input.h"
+#include "Tasks.h"
 
 enum class GameState{PLAY, EXIT};
 
@@ -50,6 +51,9 @@ public:
 
 	/*New InputClass for handling clicks and inserts*/
 	Input* InputClass;
+
+	TaskFrame* TaskClass;
+	/*New WIP Class for handling and using tasks similar to Courotine*/
 
 	struct tm tmTime;
 	struct tm EndLine;
