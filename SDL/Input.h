@@ -22,6 +22,7 @@ public:
 	SDL_Rect GetMouseLoc() { return _MouseLoc; }
 	void CoutCorrectKey(std::string t);
 	std::string KeypadTranslate(std::string key);
+	bool CheckIfCompleted();
 
 	Texture* TextureInfo()
 	{

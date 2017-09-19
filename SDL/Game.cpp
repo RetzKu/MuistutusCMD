@@ -81,10 +81,12 @@ void MainGame::run()
 	std::thread(HotkeyThread).detach();
 	std::thread(CheckTasks).detach();
 
-	Texture* B = RendererClass.AddToRenderer(TextureType::BoxType, SDL_Rect{ 10,100,200,18 });
+	Texture* B = RendererClass.AddToRenderer(Boxtype::Insert, SDL_Rect{ 5,300,300,18 }, "Task Name");
 	InsertBox = dynamic_cast<Box*>(B);
 
-	B = RendererClass.AddToRenderer(TextureType::TextType, SDL_Rect{ 10,10,0,0 });
+	B = RendererClass.AddToRenderer(Boxtype::Insert, SDL_Rect{ 312,300,80,18 }, "Task Time");
+
+	B = RendererClass.AddToRenderer(TextureType::TextType, SDL_Rect{ 10,10,0,0 }, "Running Task");
 	MainInsert = dynamic_cast<Text*>(B);
 
 	gameLoop();
@@ -107,30 +109,13 @@ void MainGame::processInput()
 	}
 }
 
-void MainGame::CreateTask(std::string TaskName)
-{
-	std::string o;
-	//Key = RendererClass.GetLine(0);
-	bool Singleuse = false;
-	if (Key.back() == 'S')
-	{
-		Key = Key.substr(0, Key.size() - 1);
-		Singleuse = true;
-	}
-	for (int i = Key.length()-3; i < Key.length(); i++)
-	{
-		
-		if (isdigit(Key[i]));
-		{
-			o.push_back(Key[i]);
-			Key[i] = ' ';
-		}
-	}
-	TriggerTimer tmpa = TriggerTimer(Key,Singleuse, std::stoi(o));
-	Key.clear();
-	Task b(tmpa);
-	Tasks.push_back(b);
-}
+//void MainGame::CreateTask(std::string TaskName)
+//{
+//	TriggerTimer tmpa = TriggerTimer(Key,Singleuse, std::stoi(o));
+//	Key.clear();
+//	Task b(tmpa);
+//	Tasks.push_back(b);
+//}
 
 
 void MainGame::gameLoop()

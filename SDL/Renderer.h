@@ -31,6 +31,7 @@ class Texture
 {
 public:
 
+	string Name;
 	SDL_Rect Rect;
 
 	Texture(){}
@@ -69,7 +70,8 @@ public:
 	vector<Texture*> TextureList;
 
 	
-	Texture* AddToRenderer(TextureType Type, SDL_Rect Rect);
+	Texture* AddToRenderer(TextureType Type, SDL_Rect Rect, string Name);
+	Texture* AddToRenderer(Boxtype Type, SDL_Rect Rect, string Name);
 	void Render();
 
 	int Frames = 0;
@@ -104,9 +106,10 @@ public:
 		_Font = TTF_OpenFont("arial.ttf", 18); 
 		_TextColor = { 0, 0, 0, 255 };
 	}
-	Text(SDL_Renderer* RenderObject, SDL_Rect Rect)
+	Text(SDL_Renderer* RenderObject, SDL_Rect Rect, string Name)
 	{
 		Texture::Rect = Rect;
+		Texture::Name = Name;
 		Texture::GetType(TextureType::TextType);
 		Texture::RenderObject = RenderObject;
 		TTF_Init(); Line = ""; 
@@ -149,8 +152,9 @@ public:
 	SDL_Rect TextRect;
 
 	Box(){}
-	Box(SDL_Renderer* Renderer, SDL_Rect NewRect, Boxtype NewType)
+	Box(SDL_Renderer* Renderer, SDL_Rect NewRect, Boxtype NewType, string Name)
 	{
+		Texture::Name = Name;
 		Texture::GetType(TextureType::BoxType);
 		Texture::RenderObject = Renderer;
 		Type = NewType;
@@ -197,6 +201,11 @@ public:
 	string Backspace()
 	{
 		Line = Line.substr(0, Line.size() - 1);
+		return Line;
+	}
+
+	string GetLine()
+	{
 		return Line;
 	}
 

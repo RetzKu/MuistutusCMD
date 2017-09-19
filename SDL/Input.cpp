@@ -1,5 +1,6 @@
 #include "Input.h"
 
+int ExtractTime(Box* B);
 
 Input::~Input()
 {
@@ -40,13 +41,16 @@ void Input::CoutCorrectKey(std::string t)
 {
 	t = KeypadTranslate(t);
 	if (t == "Space") { t = " "; }
-	else if (t == "Return") { }
+
+	if (t == "Return")
+	{
+		if (CheckIfCompleted() == false){ std::cout << "\nError while making Task"; }
+		else { std::cout << "\nTask Created"; }
+	}
 	else if (t == "Left Shift") {}
 	else if (t == "Tab") {}
 	else if (t == "Escape") { }
-
-	/*insert key*/ 
-	if (SelectedTexture != nullptr)
+	else if (SelectedTexture != nullptr)
 	{
 		if (SelectedTexture->GetType() == TextureType::BoxType)
 		{
@@ -60,6 +64,45 @@ void Input::CoutCorrectKey(std::string t)
 	}
 }
 
+bool Input::CheckIfCompleted()
+{
+	string TaskName;
+	int TaskTime;
+	for each(Texture* var in _RenderClass->TextureList)
+	{
+		if (var->Name == "Task Name")
+		{
+			Box* B = dynamic_cast<Box*>(var);
+			if (B->Rect.w == 0){ return false; }
+			else { TaskName = B->GetLine(); }
+		}
+		if (var->Name == "Task Time")
+		{
+			Box* B = dynamic_cast<Box*>(var);
+			if (B->Rect.w == 0) { return false; }
+			else { TaskTime = ExtractTime(B); if (TaskTime == -1) { return false; } }
+		}
+	}
+	return true;
+}
+
+int ExtractTime(Box* B)
+{
+	string Time;
+	for each (char Letter in B->GetLine())
+	{
+		if (isdigit(Letter))
+		{
+			Time.push_back(Letter);
+		}
+		else { return -1; }
+	}
+	if (Time == "")
+	{
+		return -1;
+	}
+	return std::stoi(Time);
+}
 
 std::string Input::KeypadTranslate(std::string key)
 {

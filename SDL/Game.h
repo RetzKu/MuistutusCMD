@@ -28,7 +28,6 @@ public:
 	~MainGame();
 
 	void run();
-	void CreateTask(std::string);
 
 	std::string Key;
 	std::vector<std::string> KeyList;

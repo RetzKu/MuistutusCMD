@@ -66,19 +66,41 @@
 //	int TextureHeight;
 //};
 
-Texture* Renderer::AddToRenderer(TextureType Type, SDL_Rect Rect)
+Texture* Renderer::AddToRenderer(TextureType Type, SDL_Rect Rect, string Name)
 {
 	if (Type == TextureType::TextType)
 	{
-		Text* NewTexture = new Text(RendererObject, Rect);
+		Text* NewTexture = new Text(RendererObject, Rect, Name);
 		TextureList.push_back(NewTexture);
 		return NewTexture;
 	}
-	else if (Type == TextureType::BoxType)
+}
+
+Texture* Renderer::AddToRenderer(Boxtype Type, SDL_Rect Rect, string Name)
+{
+	if (Type == Boxtype::Empty)
 	{
-		Box* NewBox = new Box(RendererObject, Rect, Boxtype::Insert);
+		Text* NewTexture = new Text(RendererObject, Rect, Name);
+		TextureList.push_back(NewTexture);
+		return NewTexture;
+	}
+	else if (Type == Boxtype::Insert)
+	{
+		Box* NewBox = new Box(RendererObject, Rect, Boxtype::Insert, Name);
 		TextureList.push_back(NewBox);
 		return NewBox;
+	}
+	else if (Type == Boxtype::Button)
+	{
+		Text* NewTexture = new Text(RendererObject, Rect, Name);
+		TextureList.push_back(NewTexture);
+		return NewTexture;
+	}
+	else if (Type == Boxtype::Filled)
+	{
+		Text* NewTexture = new Text(RendererObject, Rect, Name);
+		TextureList.push_back(NewTexture);
+		return NewTexture;
 	}
 }
 
