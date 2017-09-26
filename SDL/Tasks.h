@@ -21,28 +21,35 @@ public:
 class Task
 {
 public:
-	Task(struct TriggerTimer a, Renderer* Rendererobject) { _TaskData = a; _Renderer = Rendererobject; };
+	Task(struct TriggerTimer a, Renderer* Rendererobject) { _TaskData = a; _Renderer = Rendererobject; Completed = false; };
 	std::string printname() { std::cout << _TaskData.TaskName; return _TaskData.TaskName; }
 	void SetToNormal()
 	{
 		_TaskData.TimeNow = std::chrono::system_clock::now();
 		_TaskData.TimeToTrigger = false;
 	}
-	bool GetTimeDifference()
-	{
-		std::chrono::duration<double> Seconds = std::chrono::system_clock::now() - _TaskData.TimeNow;
-		auto i = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - _TaskData.TimeNow);
-		int c = (int)Seconds.count();
-		if (c > _TaskData.RecallInterval)
-		{
-			_TaskData.TimeToTrigger = true;
-			//run main task
-		}
-		return _TaskData.TimeToTrigger;
-	}
+
 	bool Single()
 	{
 		return _TaskData._Singleuse;
+	}
+
+	std::chrono::duration<float, std::milli> GetTime()
+	{
+		std::chrono::system_clock::time_point NewTime = std::chrono::system_clock::now() + std::chrono::seconds(_TaskData.RecallInterval);
+		std::chrono::system_clock::time_point Now = std::chrono::system_clock::now();
+		std::chrono::duration<float, std::milli> NewDura = std::chrono::duration_cast<std::chrono::microseconds>(NewTime - Now);
+		return NewDura;
+	}
+	
+	bool Completed;
+	void Trigger()
+	{
+		MessageBox(NULL, _TaskData.TaskName.c_str(), "elixiirit kehiin", MB_OK | MB_ICONQUESTION | MB_SYSTEMMODAL | MB_SERVICE_NOTIFICATION);
+		if (Single() == true)
+		{
+			Completed = true;
+		}
 	}
 
 private:
@@ -53,10 +60,28 @@ private:
 class TaskFrame
 {
 public:
-	TaskFrame(Renderer* RendererObject) { _RendererObject = RendererObject; }
+	TaskFrame(Renderer* RendererObject);
+	~TaskFrame()
+	{
+		for each (std::thread* Var in ThreadList)
+		{
+			if (Var->joinable())
+			{
+				Var->join();
+			}
+			delete Var;
+		}
+		ThreadList.clear();
+		for each(Task* Var in TaskList)
+		{
+			delete Var;
+		}
+		TaskList.clear();
+	}
 	std::vector<Task*> TaskList;
-
-	void CheckTasks();
+	std::vector<std::thread*> ThreadList;
+	
+	void CheckThreads(std::vector<Task*> *TaskList);
 	void CreateTask(std::string TaskName, bool SingleUse, int TimeInterval);
 private:
 	Renderer* _RendererObject;

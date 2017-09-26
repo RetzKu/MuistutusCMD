@@ -35,6 +35,7 @@ public:
 	SDL_Rect Rect;
 
 	Texture(){}
+	virtual ~Texture() { }
 	Texture(SDL_Renderer* _RenderObject, SDL_Window* _WindowObject, TextureType Type) { RenderObject = _RenderObject; WindowObject = _WindowObject; _Type = Type; }
 
 	SDL_Surface* Surface() { return _Surface; }
@@ -75,6 +76,7 @@ public:
 	void Render();
 
 	int Frames = 0;
+	int TotalLastFrames;
 	void GetFps()
 	{
 		Frames += 1;
@@ -85,6 +87,7 @@ public:
 		{
 			StartTime = std::chrono::system_clock::now();
 			cout << "\nFps: " << Frames;
+			TotalLastFrames = Frames;
 			Frames = 0;
 		}
 	}
@@ -135,6 +138,11 @@ public:
 		return Line;
 	}
 
+	string Replace(std::string NewLine)
+	{
+		Line = NewLine;
+		return Line;
+	}
 private:
 	TTF_Font* _Font;
 	SDL_Color _TextColor;

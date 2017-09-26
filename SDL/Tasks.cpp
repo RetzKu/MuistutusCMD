@@ -1,30 +1,31 @@
 #include "Tasks.h"
+#include <algorithm>
 
 std::vector<Task> Tasks;
 
 void TaskRunner(Task* ThisTask);
 
-void TaskFrame::CheckTasks()
+TaskFrame::TaskFrame(Renderer* RendererObject)
+{
+	_RendererObject = RendererObject;
+	std::thread(&TaskFrame::CheckThreads, *this, &TaskList).detach(); //Detachaa Threadin joka pit‰‰ TaskiListan ajantasalla
+}
+
+void TaskFrame::CheckThreads(std::vector<Task*> *TaskList)
 {
 	using namespace std::chrono_literals;
+
 	while (true)
 	{
-		if (Tasks.size() != 0)
+		std::vector<Task*>& Tasks = *TaskList;
+		if (sizeof(ThreadList) != 0)
 		{
 			for (int i = 0; i < Tasks.size(); i++)
 			{
-				if (Tasks[i].GetTimeDifference() == true)
+				if (Tasks[i]->Single() == true && Tasks[i]->Completed == true)
 				{
-					std::string o = Tasks[i].printname();
-					const char *Taskname = o.c_str();
-					Tasks[i].printname();
-					std::cout << "\n";
-					MessageBox(NULL, Taskname, "elixiirit kehiin", MB_OK | MB_ICONQUESTION | MB_SYSTEMMODAL | MB_SERVICE_NOTIFICATION);
-					Tasks[i].SetToNormal();
-					if (Tasks[i].Single() == true)
-					{
-						Tasks.erase(Tasks.begin()+i);
-					}
+					Tasks.erase(Tasks.begin() + i);
+					std::cout << "\tTask Erased at " << i;
 				}
 			}
 		}
@@ -35,18 +36,21 @@ void TaskFrame::CheckTasks()
 void TaskFrame::CreateTask(std::string TaskName, bool SingleUse, int TimeInterval)
 {
 	TriggerTimer tmpa = TriggerTimer(TaskName, SingleUse, TimeInterval);
-	//std::thread(TaskRunner(new Task(tmpa, _RendererObject))).detach();
-	std::thread(TaskRunner, new Task(tmpa, _RendererObject)).detach();
-	std::cout <<"kek";
+
+	Task* NewTask = new Task(tmpa, _RendererObject);
+	std::thread(TaskRunner, NewTask).detach();
+
+	TaskList.push_back(NewTask);
+
+	std::cout <<"Task Created within it's thread\n";
 }
 
-void TaskRunner(Task* ThisTask)
+void TaskRunner(Task* NewTask)
 {
 	using namespace std::chrono_literals;
-
-	while (true)
+	while (NewTask->Completed == false)
 	{
-		std::cout << "\nRunning like nigga this thread is";
-		std::this_thread::sleep_for(1s);
+		std::this_thread::sleep_for(NewTask->GetTime());
+		NewTask->Trigger();
 	}
 }

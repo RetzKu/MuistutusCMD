@@ -10,7 +10,6 @@ class Input
 public:
 	//Input(MainGame Game) { _Game = Game; }
 	Input(SDL_Window* WindowObject, Renderer* RenderClass) { _WindowObject = WindowObject; _RenderClass = RenderClass; }
-	Input(){}
 	~Input();
 
 	/*Checks all functions inside this class. Put this in main gameloop*/

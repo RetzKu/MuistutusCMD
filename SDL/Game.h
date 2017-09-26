@@ -49,6 +49,8 @@ public:
 	Text* MainInsert;
 	Box* InsertBox;
 
+	Text* FpsMeter;
+	
 	/*New InputClass for handling clicks and inserts*/
 	Input* InputClass;
 

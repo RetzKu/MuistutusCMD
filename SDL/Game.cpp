@@ -18,8 +18,8 @@ MainGame::MainGame()
 
 MainGame::~MainGame()
 {
-	delete InputClass;
-	delete TaskClass;
+	 delete InputClass;
+	 delete TaskClass;
 }
 
 void MainGame::run()
@@ -27,12 +27,17 @@ void MainGame::run()
 	InputClass = new Input(RendererClass.WindowObject , &RendererClass);
 	TaskClass = new TaskFrame(&RendererClass);
 
-	TaskClass->CreateTask("pökäle", false, 20);
+	TaskClass->CreateTask("pökäle", false, 5);
+	TaskClass->CreateTask("singlepökäle", true, 10);
 
 	std::thread(HotkeyThread).detach();
 
+
 	Texture* B = RendererClass.AddToRenderer(Boxtype::Insert, SDL_Rect{ 5,300,240,18 }, "Task Name");
 	InsertBox = dynamic_cast<Box*>(B);
+
+	B = RendererClass.AddToRenderer(TextureType::TextType, SDL_Rect{ 300, 10,0,0 }, "Fps Meter");
+	FpsMeter = dynamic_cast<Text*>(B);
 
 	B = RendererClass.AddToRenderer(Boxtype::Insert, SDL_Rect{ 258,300,80,18 }, "Task Time");
 
@@ -55,7 +60,7 @@ void MainGame::processInput()
 				_gameState = GameState::EXIT;
 				break;
 		}
-		InputClass->RunInput(&evnt);
+		//InputClass->RunInput(&evnt);
 	}
 }
 
@@ -71,6 +76,7 @@ void MainGame::gameLoop()
 		processInput();
 		RendererClass.Render();
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		FpsMeter->Replace(std::to_string(RendererClass.TotalLastFrames));
 	}
 }
 
