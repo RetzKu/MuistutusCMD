@@ -9,7 +9,7 @@ class Input
 {
 public:
 	//Input(MainGame Game) { _Game = Game; }
-	Input(SDL_Window* WindowObject, Renderer* RenderClass) { _WindowObject = WindowObject; _RenderClass = RenderClass; }
+	Input(SDL_Window* WindowObject, Renderer* RenderClass) { _WindowObject = WindowObject; _RenderClass = RenderClass;}
 	~Input();
 
 	/*Checks all functions inside this class. Put this in main gameloop*/
@@ -22,7 +22,8 @@ public:
 	void CoutCorrectKey(std::string t);
 	std::string KeypadTranslate(std::string key);
 	bool CheckIfCompleted();
-
+	bool TaskFilled;
+	
 	Texture* TextureInfo()
 	{
 		if (sizeof(_RenderClass->TextureList) != 0)
@@ -48,5 +49,6 @@ private:
 	SDL_Window* _WindowObject;
 	SDL_Rect _MouseLoc;
 	Renderer* _RenderClass;
+	
 };
 

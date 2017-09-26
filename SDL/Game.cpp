@@ -24,11 +24,12 @@ MainGame::~MainGame()
 
 void MainGame::run()
 {
-	InputClass = new Input(RendererClass.WindowObject , &RendererClass);
 	TaskClass = new TaskFrame(&RendererClass);
+	   
+	InputClass = new Input(RendererClass.WindowObject , &RendererClass);
 
-	TaskClass->CreateTask("pökäle", false, 5);
-	TaskClass->CreateTask("singlepökäle", true, 10);
+	//TaskClass->CreateTask("pökäle", false, 5);
+	//TaskClass->CreateTask("singlepökäle", true, 10);
 
 	std::thread(HotkeyThread).detach();
 
@@ -60,10 +61,9 @@ void MainGame::processInput()
 				_gameState = GameState::EXIT;
 				break;
 		}
-		//InputClass->RunInput(&evnt);
+		InputClass->RunInput(&evnt);
 	}
 }
-
 
 
 
@@ -76,12 +76,59 @@ void MainGame::gameLoop()
 		processInput();
 		RendererClass.Render();
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
-		FpsMeter->Replace(std::to_string(RendererClass.TotalLastFrames));
+		FpsMeter->Replace("Fps: " + std::to_string(RendererClass.TotalLastFrames));
+		if (InputClass->TaskFilled == true)
+		{
+			std::string TaskName;
+			int TaskTime;
+			for each(Texture* Var in RendererClass.TextureList)
+			{
+				if (Var->Name == "Task Name")
+				{
+					Box* tmp = dynamic_cast<Box*>(Var);
+					TaskName = tmp->GetLine();
+				}
+				if (Var->Name == "Task Time")
+				{
+					Box* tmp = dynamic_cast<Box*>(Var);
+					TaskTime = ExtractTime(tmp);
+				}
+			}
+			TaskClass->CreateTask(TaskName, true, TaskTime);
+			InputClass->TaskFilled = false;
+		}
+		//if (var->Name == "Task Name")
+		//{
+		//	Box* B = dynamic_cast<Box*>(var);
+		//	if (B->Rect.w == 0) { return false; }
+		//	else { TaskName = B->GetLine(); }
+		//}
+		//if (var->Name == "Task Time")
+		//{
+		//	Box* B = dynamic_cast<Box*>(var);
+		//	if (B->Rect.w == 0) { return false; }
+		//	else { TaskTime = ExtractTime(B); if (TaskTime == -1) { return false; } }
+		//}
 	}
 }
 
-	
-	
+int MainGame::ExtractTime(Box* B)
+{
+	string Time;
+	for each (char Letter in B->GetLine())
+	{
+		if (isdigit(Letter))
+		{
+			Time.push_back(Letter);
+		}
+		else { return -1; }
+	}
+	if (Time == "")
+	{
+		return -1;
+	}
+	return std::stoi(Time);
+}
 
 void HotkeyHandler(SDL_Window *_window, HWND WindowsHandle)
 {

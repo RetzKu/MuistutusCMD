@@ -51,12 +51,13 @@ public:
 
 	Text* FpsMeter;
 	
-	/*New InputClass for handling clicks and inserts*/
 	Input* InputClass;
+	/*New InputClass for handling clicks and inserts*/
 
 	TaskFrame* TaskClass;
 	/*New WIP Class for handling and using tasks similar to Courotine*/
 
+	int ExtractTime(Box* B);
 	struct tm tmTime;
 	struct tm EndLine;
 	int diffseconds;

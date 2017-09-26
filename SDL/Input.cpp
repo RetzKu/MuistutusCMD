@@ -44,8 +44,8 @@ void Input::CoutCorrectKey(std::string t)
 
 	if (t == "Return")
 	{
-		if (CheckIfCompleted() == false){ std::cout << "\nError while making Task"; }
-		else { std::cout << "\nTask Created"; }
+		if (CheckIfCompleted() == false) { std::cout << "\nError while making Task"; TaskFilled = false; }
+		else { std::cout << "\nTask Created"; TaskFilled = true; }
 	}
 	else if (t == "Left Shift") {}
 	else if (t == "Tab") {}
@@ -66,8 +66,10 @@ void Input::CoutCorrectKey(std::string t)
 
 bool Input::CheckIfCompleted()
 {
+
 	string TaskName;
 	int TaskTime;
+
 	for each(Texture* var in _RenderClass->TextureList)
 	{
 		if (var->Name == "Task Name")
@@ -83,6 +85,7 @@ bool Input::CheckIfCompleted()
 			else { TaskTime = ExtractTime(B); if (TaskTime == -1) { return false; } }
 		}
 	}
+	//_TaskFrame->CreateTask(TaskName, false, TaskTime);
 	return true;
 }
 

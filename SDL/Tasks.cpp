@@ -1,5 +1,4 @@
 #include "Tasks.h"
-#include <algorithm>
 
 std::vector<Task> Tasks;
 
