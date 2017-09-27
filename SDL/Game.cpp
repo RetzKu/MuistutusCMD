@@ -25,7 +25,6 @@ MainGame::~MainGame()
 void MainGame::run()
 {
 	TaskClass = new TaskFrame(&RendererClass);
-	   
 	InputClass = new Input(RendererClass.WindowObject , &RendererClass);
 
 	//TaskClass->CreateTask("pökäle", false, 5);
@@ -120,6 +119,10 @@ int MainGame::ExtractTime(Box* B)
 		if (isdigit(Letter))
 		{
 			Time.push_back(Letter);
+		}
+		else if (Letter == 'M')
+		{
+			Time = std::to_string(std::stoi(Time) * 60);
 		}
 		else { return -1; }
 	}

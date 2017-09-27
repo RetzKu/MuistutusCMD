@@ -1,6 +1,6 @@
 #include "Input.h"
 
-int ExtractTime(Box* B);
+bool ExtractTime(Box* B);
 
 Input::~Input()
 {
@@ -66,45 +66,38 @@ void Input::CoutCorrectKey(std::string t)
 
 bool Input::CheckIfCompleted()
 {
-
-	string TaskName;
-	int TaskTime;
-
 	for each(Texture* var in _RenderClass->TextureList)
 	{
 		if (var->Name == "Task Name")
 		{
 			Box* B = dynamic_cast<Box*>(var);
 			if (B->Rect.w == 0){ return false; }
-			else { TaskName = B->GetLine(); }
+			else {}
 		}
 		if (var->Name == "Task Time")
 		{
 			Box* B = dynamic_cast<Box*>(var);
 			if (B->Rect.w == 0) { return false; }
-			else { TaskTime = ExtractTime(B); if (TaskTime == -1) { return false; } }
+			else if(ExtractTime(B) == false) { return false; } 
 		}
 	}
 	//_TaskFrame->CreateTask(TaskName, false, TaskTime);
 	return true;
 }
 
-int ExtractTime(Box* B)
+bool ExtractTime(Box* B)
 {
-	string Time;
 	for each (char Letter in B->GetLine())
 	{
-		if (isdigit(Letter))
-		{
-			Time.push_back(Letter);
-		}
-		else { return -1; }
+		if (isdigit(Letter)){}
+		else if(Letter == 'M') {}
+		else { return false; }
 	}
-	if (Time == "")
+	if (sizeof(B->GetLine()) == 0)
 	{
-		return -1;
+		return false;
 	}
-	return std::stoi(Time);
+	return true;
 }
 
 std::string Input::KeypadTranslate(std::string key)
