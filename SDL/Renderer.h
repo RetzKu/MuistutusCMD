@@ -16,6 +16,7 @@ enum TextureType
 	TextType,
 	SolidType,
 	BoxType,
+	CheckBoxType,
 };
 
 
@@ -33,6 +34,8 @@ public:
 
 	string Name;
 	SDL_Rect Rect;
+	SDL_Renderer* RenderObject;
+	SDL_Window* WindowObject;
 
 	Texture(){}
 	virtual ~Texture() { }
@@ -49,9 +52,6 @@ public:
 	TextureType GetType() { return _Type; }
 	void GetType(TextureType Type) { _Type = Type; }
 
-	SDL_Renderer* RenderObject;
-	SDL_Window* WindowObject;
-	
 private:
 	SDL_Surface* _Surface;
 	SDL_Texture* _Texture;
@@ -73,6 +73,8 @@ public:
 	
 	Texture* AddToRenderer(TextureType Type, SDL_Rect Rect, string Name);
 	Texture* AddToRenderer(Boxtype Type, SDL_Rect Rect, string Name);
+	Texture* AddToRenderer(TextureType Type, SDL_Rect Rect, int Size, string Name);
+
 	void Render();
 
 	int Frames = 0;
@@ -120,7 +122,7 @@ public:
 	}
 	void Update() override
 	{
-		Texture::Surface(TTF_RenderText_Solid(_Font, Line.c_str(), _TextColor)); 
+		Texture::Surface(TTF_RenderText_Shaded(_Font, Line.c_str(), _TextColor, SDL_Color{ 255,255,255,255 }));
 		Texture::TextureData(SDL_CreateTextureFromSurface(Texture::RenderObject,Texture::Surface()));
 		SDL_QueryTexture(Texture::TextureData(), NULL, NULL, &Texture::Rect.w, &Texture::Rect.h);
 		SDL_FreeSurface(Texture::Surface());
@@ -187,7 +189,7 @@ public:
 
 	void Update() override
 	{
-		Texture::Surface(TTF_RenderText_Solid(_Font, Line.c_str(), _TextColor)); 
+		Texture::Surface(TTF_RenderText_Shaded(_Font, Line.c_str(), _TextColor, SDL_Color{255,255,255,255}));
 		Texture::TextureData(SDL_CreateTextureFromSurface(Texture::RenderObject,Texture::Surface()));
 		SDL_QueryTexture(Texture::TextureData(), NULL, NULL, &TextRect.w, &TextRect.h);
 		if (TextRect.w > Rect.w) {
@@ -220,5 +222,61 @@ private:
 	TTF_Font* _Font;
 	SDL_Color _TextColor;
 	string Line;
+};
+
+class CheckBox : public Texture
+{
+public:
+	SDL_Rect TextRect;
+	CheckBox(SDL_Renderer* RenderObject, SDL_Rect Location, int Size, std::string Name)
+	{
+		Texture::Name = Name;
+		Location.w = Size;
+		Location.h = Size;
+		Texture::Rect = Location;
+		Texture::RenderObject = RenderObject;
+		Texture::GetType(TextureType::CheckBoxType);
+		Init();
+		TextRect.x = Location.x;
+		TextRect.y = Location.y;
+	}
+
+	bool Init()
+	{
+		TTF_Init();
+		_Font = TTF_OpenFont("arial.ttf", 26);
+		if (_Font == nullptr) return false;
+		_TextColor = { 0, 0, 0, 255 };
+		return true;
+	}
+
+	void Update() override
+	{
+		Texture::Surface(TTF_RenderText_Blended(_Font, X, _TextColor));
+		Texture::TextureData(SDL_CreateTextureFromSurface(Texture::RenderObject,Texture::Surface()));
+		SDL_QueryTexture(Texture::TextureData(), NULL, NULL, &TextRect.w, &TextRect.h);
+		SDL_FreeSurface(Texture::Surface());
+	}
+
+	bool State() { return _State; }
+	void State(bool State) { _State = State; }
+	void Switch() 
+	{
+		_State = !_State; 
+		switch (_State)
+		{
+			case true:
+				X = "X";
+				break;
+			case false:
+				X = "";
+				break;
+		}
+	}
+private:
+	const char* X;
+	bool _State;
+	TTF_Font* _Font;
+	SDL_Color _TextColor;
 };
 

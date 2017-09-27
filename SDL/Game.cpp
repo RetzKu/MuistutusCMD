@@ -1,5 +1,6 @@
 #include "Game.h"
 #include <vector>
+#include <TlHelp32.h>
 
 
 
@@ -27,11 +28,10 @@ void MainGame::run()
 	TaskClass = new TaskFrame(&RendererClass);
 	InputClass = new Input(RendererClass.WindowObject , &RendererClass);
 
-	//TaskClass->CreateTask("pökäle", false, 5);
-	//TaskClass->CreateTask("singlepökäle", true, 10);
-
 	std::thread(HotkeyThread).detach();
 
+	Texture* CheckBoxTexture = RendererClass.AddToRenderer(TextureType::CheckBoxType, SDL_Rect{ 346,300,0,0 }, 18, "Single Use");
+	CheckBox* SingleUse = dynamic_cast<CheckBox*>(CheckBoxTexture);
 
 	Texture* B = RendererClass.AddToRenderer(Boxtype::Insert, SDL_Rect{ 5,300,240,18 }, "Task Name");
 	InsertBox = dynamic_cast<Box*>(B);

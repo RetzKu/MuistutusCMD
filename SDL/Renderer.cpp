@@ -74,6 +74,18 @@ Texture* Renderer::AddToRenderer(TextureType Type, SDL_Rect Rect, string Name)
 		TextureList.push_back(NewTexture);
 		return NewTexture;
 	}
+	return nullptr;
+}
+
+Texture* Renderer::AddToRenderer(TextureType Type, SDL_Rect Rect, int Size, string Name)
+{
+	if (Type == TextureType::CheckBoxType)
+	{
+		CheckBox* NewTexture = new CheckBox(RendererObject, Rect, Size, Name);
+		TextureList.push_back(NewTexture);
+		return NewTexture;
+	}
+	return nullptr;
 }
 
 Texture* Renderer::AddToRenderer(Boxtype Type, SDL_Rect Rect, string Name)
@@ -102,6 +114,7 @@ Texture* Renderer::AddToRenderer(Boxtype Type, SDL_Rect Rect, string Name)
 		TextureList.push_back(NewTexture);
 		return NewTexture;
 	}
+	return nullptr;
 }
 
 Renderer::Renderer()
@@ -121,6 +134,7 @@ Renderer::~Renderer()
 
 	SDL_DestroyRenderer(RendererObject);
 	SDL_DestroyWindow(WindowObject);
+	SDL_Quit();
 }
 
 
@@ -135,8 +149,19 @@ void Renderer::Render()
 		{
 			if (var->GetType() != BoxType)
 			{
-				Text* TmpText = dynamic_cast<Text*>(var);
-				TmpText->Update();
+				if (var->GetType() == TextType)
+				{
+					Text* TmpText = dynamic_cast<Text*>(var);
+					TmpText->Update();
+				}
+				else if(var->GetType() == CheckBoxType)
+				{
+					SDL_SetRenderDrawColor(var->RenderObject, 0, 0, 0, 0xFF);
+					SDL_RenderDrawRect(var->RenderObject, &var->Rect);
+					SDL_SetRenderDrawColor(var->RenderObject, 255, 255, 255, 0xFF);
+					CheckBox* Tmp = dynamic_cast<CheckBox*>(var);
+					Tmp->Update();
+				}
 
 				SDL_RenderCopy(var->Texture::RenderObject, var->Texture::TextureData(), 0, &var->Rect);
 				SDL_DestroyTexture(var->Texture::TextureData());

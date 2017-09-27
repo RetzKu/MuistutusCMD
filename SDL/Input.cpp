@@ -25,6 +25,15 @@ void Input::RunInput(SDL_Event* Event)
 void Input::ProcessClick()
 {
 	SelectedTexture = TextureInfo();
+	if (SelectedTexture != nullptr)
+	{
+		if (SelectedTexture->GetType() == CheckBoxType)
+		{
+			CheckBox* Tmp = dynamic_cast<CheckBox*>(SelectedTexture);
+			Tmp->Switch();
+		}
+
+	}
 }
 
 SDL_Rect* Input::MouseLoc()
