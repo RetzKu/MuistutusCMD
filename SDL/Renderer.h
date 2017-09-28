@@ -189,16 +189,11 @@ public:
 
 	void Update() override
 	{
+		if (TextRect.w > Rect.w){ Backspace(); }
 		Texture::Surface(TTF_RenderText_Shaded(_Font, Line.c_str(), _TextColor, SDL_Color{255,255,255,255}));
 		Texture::TextureData(SDL_CreateTextureFromSurface(Texture::RenderObject,Texture::Surface()));
 		SDL_QueryTexture(Texture::TextureData(), NULL, NULL, &TextRect.w, &TextRect.h);
-		if (TextRect.w > Rect.w) {
-			Backspace();
-			Texture::Surface(TTF_RenderText_Solid(_Font, Line.c_str(), _TextColor));
-			Texture::TextureData(SDL_CreateTextureFromSurface(Texture::RenderObject, Texture::Surface()));
-			SDL_QueryTexture(Texture::TextureData(), NULL, NULL, &TextRect.w, &TextRect.h);
-			SDL_FreeSurface(Texture::Surface());
-		}
+		SDL_FreeSurface(Texture::Surface());
 	}
 	
 	string PushBack(char Key)

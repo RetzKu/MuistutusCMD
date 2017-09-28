@@ -151,8 +151,8 @@ void Renderer::Render()
 			{
 				if (var->GetType() == TextType)
 				{
-					Text* TmpText = dynamic_cast<Text*>(var);
-					TmpText->Update();
+					//Text* TmpText = dynamic_cast<Text*>(var);
+					//TmpText->Update();
 				}
 				else if(var->GetType() == CheckBoxType)
 				{
