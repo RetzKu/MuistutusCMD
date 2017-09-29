@@ -120,7 +120,7 @@ Texture* Renderer::AddToRenderer(Boxtype Type, SDL_Rect Rect, string Name)
 Renderer::Renderer()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
-	SDL_CreateWindowAndRenderer(400, 400, 0, &WindowObject, &RendererObject);
+	SDL_CreateWindowAndRenderer(400, 80, 0, &WindowObject, &RendererObject);
 	SDL_SetRenderDrawColor(RendererObject, 255, 255, 255, 0xFF);
 	StartTime = std::chrono::system_clock::now();
 }

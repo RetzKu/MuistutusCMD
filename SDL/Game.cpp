@@ -30,19 +30,19 @@ void MainGame::run()
 
 	std::thread(HotkeyThread).detach();
 
-	Texture* CheckBoxTexture = RendererClass.AddToRenderer(TextureType::CheckBoxType, SDL_Rect{ 346,300,0,0 }, 18, "Single Use");
+	Texture* CheckBoxTexture = RendererClass.AddToRenderer(TextureType::CheckBoxType, SDL_Rect{ 346,10,0,0 }, 18, "Single Use");
 	CheckBox* SingleUse = dynamic_cast<CheckBox*>(CheckBoxTexture);
 
-	Texture* B = RendererClass.AddToRenderer(Boxtype::Insert, SDL_Rect{ 5,300,240,18 }, "Task Name");
+	Texture* B = RendererClass.AddToRenderer(Boxtype::Insert, SDL_Rect{ 5,10,240,18 }, "Task Name");
 	InsertBox = dynamic_cast<Box*>(B);
 
-	B = RendererClass.AddToRenderer(TextureType::TextType, SDL_Rect{ 300, 10,0,0 }, "Fps Meter");
-	FpsMeter = dynamic_cast<Text*>(B);
+	//B = RendererClass.AddToRenderer(TextureType::TextType, SDL_Rect{ 300, 10,0,0 }, "Fps Meter");
+	//FpsMeter = dynamic_cast<Text*>(B);
 
-	B = RendererClass.AddToRenderer(Boxtype::Insert, SDL_Rect{ 258,300,80,18 }, "Task Time");
+	B = RendererClass.AddToRenderer(Boxtype::Insert, SDL_Rect{ 258,10,80,18 }, "Task Time");
 
-	B = RendererClass.AddToRenderer(TextureType::TextType, SDL_Rect{ 10,10,0,0 }, "Running Task");
-	MainInsert = dynamic_cast<Text*>(B);
+	//B = RendererClass.AddToRenderer(TextureType::TextType, SDL_Rect{ 10,10,0,0 }, "Running Task");
+	//MainInsert = dynamic_cast<Text*>(B);
 
 	gameLoop();
 
@@ -75,25 +75,32 @@ void MainGame::gameLoop()
 		processInput();
 		RendererClass.Render();
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
-		FpsMeter->Replace("Fps: " + std::to_string(RendererClass.TotalLastFrames));
+		//FpsMeter->Replace("Fps: " + std::to_string(RendererClass.TotalLastFrames));
 		if (InputClass->TaskFilled == true)
 		{
 			std::string TaskName;
 			int TaskTime;
+			bool Single;
 			for each(Texture* Var in RendererClass.TextureList)
 			{
 				if (Var->Name == "Task Name")
 				{
 					Box* tmp = dynamic_cast<Box*>(Var);
 					TaskName = tmp->GetLine();
+					tmp->ResetLine();
 				}
 				if (Var->Name == "Task Time")
 				{
 					Box* tmp = dynamic_cast<Box*>(Var);
 					TaskTime = ExtractTime(tmp);
 				}
+				if (Var->Name == "Single Use")
+				{
+					CheckBox* tmp = dynamic_cast<CheckBox*>(Var);
+					Single = tmp->State();
+				}
 			}
-			TaskClass->CreateTask(TaskName, true, TaskTime);
+			TaskClass->CreateTask(TaskName, Single, TaskTime);
 			InputClass->TaskFilled = false;
 		}
 		//if (var->Name == "Task Name")

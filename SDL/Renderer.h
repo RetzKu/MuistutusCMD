@@ -212,6 +212,10 @@ public:
 	{
 		return Line;
 	}
+	void ResetLine()
+	{
+		Line = "";
+	}
 
 private:
 	TTF_Font* _Font;
